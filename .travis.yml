@@ -1,0 +1,55 @@
+os: linux
+dist: trusty
+sudo: required
+services: docker
+language: minimal
+install: skip
+script: skip
+addons:
+  apt:
+    packages:
+      - docker-ce
+
+#deploy:
+#  - &deploy-releases
+#    provider: releases
+#    skip_cleanup: true
+#    api_key:
+#      secure: VzowiHBE7Lc14p/QOFvYYLz65g1uvYvffv32F2AVlpt4hs0EAdqME2+BLPnDDI1D4Oou30VXs2p37doI0J2qyyiT5TbSFzErYz+7uREYEOBWR5IQsK/iQrSxKOZ2Ox558T1zcObnZhVjAbV1yxQhdqitSWBCpayuNl4Gvubc0S1+MXhh/psvLgJ/r2Nq5gCAaoqmxvHUoNotQWYF5hKzynXPvV0wniB2l2HKc/UMK7jIu+GRKwMWk1NXuBk5ocreoAVrSH/FHD87K8wUfUqgaGjYRaniKbl2etMw4kcfRC1J+WtcUzVeHtb2tnlHo1Qk1tE7Dt5LMWYp0RlpiLfHmu4attHn2jdKBwdetGiB+admq7D6K0bROVQw6l1kJNYNROXR9PhA6ZkYQvDY1iF+RmikUee8zpGEZE0Ux1RjlCBAOE+yJu3/TWJpO3KCFEYKELqmljOgpaAu/ogyowLwDtakjzK1nA34CmgN9xwgARuxbzQNPxMIlFBeH4QJ9qMj3Jo9jUOxKF4dtSF5Y2t8p4XZ4RDBAwMb4QB35BaWCd7u2UwCVbks3CR7mdFXT22ZjN+92kgFOsqhsK67cNCXuUhL3jDAQ5His4qqca2+A25BVDFG3qz673gZotIq4/MYcBZx7daNJN88dFH47Rx8SDtiu7mb/6Y7TMaf7zW/KEs=
+#    file: "ghdl-*.tgz"
+#    file_glob: true
+#    on:
+#      repo: 1138-4EB/ghdl
+#      all_branches: true
+#      tags: true
+
+stages:
+  - build images
+#  - test
+  - build and update gh-pages
+
+jobs:
+  include:
+    - script: if echo "$TRAVIS_COMMIT_MESSAGE" | grep -F -q "[ci test]"; then ./btd.sh test; fi;
+    - stage: build images
+      script: if echo "$TRAVIS_COMMIT_MESSAGE" | grep -F -q "[ci images]"; then ./btd.sh images; fi;
+      deploy:
+        - provider: script
+          skip_cleanup: true
+          script: ./deploy2dockerhub.sh "$TRAVIS_COMMIT_MESSAGE"
+          env:
+            - secure: bl5WI8q3kob5jo3L1Ec5qB1UYDQyBB0WkAJcPe5jc1PZF6ugbzJVbNJPu2bentA8cuOZj4ljvQqzOUNsoorAKulNUstlY+O4ecjryhvTfLQRcMQPBw5hSCTw6hb7vi5nwDyk+Y2qCy+t2PnZ0SlSiIG5lV9wjZj3UpsiwDcTGmJcE5tf6k83KHNwUkfTnHgy08jA069kBPXSoI7cs1JqxMRxPbA72Z//so/ev0W0K5fZQ+bQGEyEzwNVzVO7MoOsfGzzIvlju7ZiSAS+ivQ0dzsi1a+70fTlI2ItfaSP7BDzIKt6T3RJAZctJfJXlf9/JsdXEZ005SOUIROGV21rkaidysyhKMtRwc1ZqOs950SqOJsDJeC0a5HKGPijvCyeJdXWlTKu+5Ziw7+ysk5Iy1DWPHLaJTL2Mo1Ae9O3ho3kiWLrou6tQSZOt7UCxoOrY1M/pBGtC1lUkuTa+CP/sGU+46og3gqJk2RKGy2rHB91PGdR7VxdttHGF4UH2KLocR/bDNohuHhdYcrygB7ZNRdhfi1TAiBC+ra+wAlCPNS+Goj9DufIPxaTtpOzV/OTfDbruobvmr4qofDid3qyXdeM1QLwrpNlDnNmvIfmWhDBDELcshjD1s1Im3/fVGCiB6wulq4jwhI8lhBi/5P4gPZOwtIHV731D5LCsrBeqJI= #U
+            - secure: XhhXEzGXAtLkgijJ5SlfFINgWDPwEBomD526HYz9Dga5A1LILuv+bV21LBkY38M0089kShZQNQUf7kUbjl1GWNhZYxu7BXs15oImXG5BXRmWr+oa3g1SWbJB4ApJ9meMK3ly41Uec70JVhKjKY9MZVlwZJLUr6Uv6knKiiTrVldF6lNUr5oks0Vw0swkczk00t4y/bUKjr+eqyvnW+fZkQQfdgNXfbNhn8qTDmEab4tRqawpdz+XYnSsq8RIkl82iC1d3Lbm0LVsV2CwaDAxbCxvdYZ9UExd/nNaOM8cbGKcYN+yqtMQAzCdzRPbNLuxd7UY40sTF/zTm11FqZ8JMuP9sEf/YULkWKl2n1oHE3ZjU0ekRUHzjeRt6rBvgYxwhWO1x4uY9Qi/mk3m4Wz2pRf9Y8nojPaiaYKyZ7xMT2yIYYdc10a2rw1AIcF34Ifo9tDjsHXLhyC8xp/kPFmvumgsWEZkB39zsQ5pgvT4TZnw2qlGpJapSDMpfGGUo4PEI9S1wvA9DmeGfg6PJCHTarBixok2PxAfs3Xyc//y3GKsf5jKCIjTZk4osVDK3ycXeVjRUmGLuaehoMqRqn9qcFzxsKBtzFiEq2S2MjqrJPXxrRtzh4kYMPBJOu2pQE5pH9XiSPQc5kBLP8/bFxohzLGhIG9DGmtk+rkfvZQ8WuI= #P
+          on:
+            repo: buildthedocs/btd
+            branch: master
+    - stage: build and update gh-pages
+      env: BTD_TARGET_BRANCH="https://github.com/buildthedocs/buildthedocs.github.io.git:master"
+      script: ./btd.sh build -v "master,featured"
+      deploy:
+        - provider: script
+          skip_cleanup: true
+          script: BTD_DEPLOY_KEY="travis/deploy_key.enc" ./btd.sh deploy
+          on:
+            repo: buildthedocs/btd
+            branch: master
