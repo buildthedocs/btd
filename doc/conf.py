@@ -122,6 +122,10 @@ except Exception as ex:
 
 # -- Options for HTML output ----------------------------------------------
 
+#import json
+#decoded = json.loads(encoded)
+#dictionary1, dictionary2 = decoded
+
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #html_theme = 'alabaster'
