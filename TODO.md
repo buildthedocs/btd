@@ -5,7 +5,12 @@
   - Can the tarball/zip file be replaced with a git clone? Guess the correct combination for `html_theme`,
   `html_theme_path` and `templates_path`.
     - https://sphinx-rtd-theme.readthedocs.io/en/latest/#via-git-or-download
-
+- Generate `context.json` dynamically:
+  - Make the versions menu point to the same page, not to the root of the version.
+- Provide both "Edit on GitHub" and "View on GitHub"
+- https://stackoverflow.com/questions/39007271/why-doesnt-readthedocs-show-last-updated-on
+  - http://www.sphinx-doc.org/en/stable/config.html#confval-html_last_updated_fmt
+- https://www.mathjax.org/cdn-shutting-down/
 - How to customize the builder/build process
 
 ---

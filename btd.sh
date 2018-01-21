@@ -59,19 +59,21 @@ btd_config() {
         "--target"|"-target")   set -- "$@" "-t";;
         "--formats"|"-formats") set -- "$@" "-f";;
         "--version"|"-version") set -- "$@" "-v";;
+        "--disp_gh"|"--disp_gh") set -- "$@" "-d";;
       *) set -- "$@" "$arg"
     esac
   done
   # Parse args
-  while getopts ":c:i:o:s:t:f:v:" opt; do
+  while getopts ":c:i:o:s:t:f:v:d" opt; do
     case $opt in
-      c) BTD_CONFIG_FILE=$OPTARG;;
-      i) BTD_INPUT_DIR=$OPTARG;;
-      o) BTD_OUTPUT_DIR=$OPTARG;;
-      s) BTD_SOURCE_BRANCH=$OPTARG;;
-      f) BTD_TARGET_BRANCH=$OPTARG;;
-      t) BTD_FORMATS=$OPTARG;;
+      c) BTD_CONFIG_FILE="$OPTARG";;
+      i) BTD_INPUT_DIR="$OPTARG";;
+      o) BTD_OUTPUT_DIR="$OPTARG";;
+      s) BTD_SOURCE_REPO="$OPTARG";;
+      t) BTD_TARGET_REPO="$OPTARG";;
+      f) BTD_FORMATS="$OPTARG";;
       v) BTD_VERSION="$OPTARG";;
+      d) BTD_DISPLAY_GH="true";;
       \?) printf "$ANSI_RED[BTD - config] Invalid option: -$OPTARG $ANSI_NOCOLOR\n" >&2
   	exit 1 ;;
       :)  printf "$ANSI_RED[BTD - config] Option -$OPTARG requires an argument. $ANSI_NOCOLOR\n" >&2
@@ -82,8 +84,7 @@ btd_config() {
   if [   "$BTD_CONFIG_FILE" = "" ]; then   BTD_CONFIG_FILE=".btd.yml";       fi
   if [     "$BTD_INPUT_DIR" = "" ]; then     BTD_INPUT_DIR="doc";            fi
   if [    "$BTD_OUTPUT_DIR" = "" ]; then    BTD_OUTPUT_DIR="../btd_builds";  fi
-  if [ "$BTD_SOURCE_BRANCH" = "" ]; then BTD_SOURCE_BRANCH="master";         fi
-  if [ "$BTD_TARGET_BRANCH" = "" ]; then BTD_TARGET_BRANCH="gh-pages";       fi
+  if [   "$BTD_TARGET_REPO" = "" ]; then   BTD_TARGET_REPO="gh-pages";       fi
   if [       "$BTD_FORMATS" = "" ]; then       BTD_FORMATS="html,pdf";       fi
   if [       "$BTD_VERSION" = "" ]; then       BTD_VERSION="master";         fi
   if [    "$BTD_IMG_SPHINX" = "" ]; then    BTD_IMG_SPHINX="btdi/sphinx:py2-featured"; fi
@@ -91,7 +92,14 @@ btd_config() {
   if [  "$BTD_SPHINX_THEME" = "" ]; then  BTD_SPHINX_THEME="https://github.com/buildthedocs/sphinx_btd_theme/archive/master.tar.gz"; fi
   if [    "$BTD_DEPLOY_KEY" = "" ]; then    BTD_DEPLOY_KEY="deploy_key.enc"; fi
   
-  #--- Source repository and input dir
+  if [   "$BTD_SOURCE_REPO" = "" ]; then
+    BTD_SOURCE_REPO="master";
+    if [ -d ".git" ] && [ "`command -v git`" != "" ]; then
+      BTD_SOURCE_REPO="`git remote get-url origin`:master"
+    fi
+  fi
+  
+  #---
   
   parse_branch() {
     if [ "$PARSED_BRANCH" != "" ]; then
@@ -118,7 +126,9 @@ btd_config() {
     fi
   }
   
-  PARSED_BRANCH="$BTD_SOURCE_BRANCH"
+  #--- Source repository and input dir
+  
+  PARSED_BRANCH="$BTD_SOURCE_REPO"
   parse_branch
   BTD_SOURCE_URL="$PARSED_URL"
   BTD_SOURCE_BRANCH="$PARSED_BRANCH"
@@ -127,19 +137,27 @@ btd_config() {
   fi
   
   CLEAN_BTD=""
-  if [ "$BTD_SOURCE_URL" != "" ]; then
+  if [ "$BTD_SOURCE_URL" = "" ]; then
+    CLEAN_BTD="./"
+  fi
+  
+  if [ "$CLEAN_BTD" = "" ]; then
     printf "$ANSI_DARKCYAN[BTD - config] Clone -b $BTD_SOURCE_BRANCH $BTD_SOURCE_URL $ANSI_NOCOLOR\n"
+    cd ..
     if [ -d "btd-work" ]; then rm -rf "btd-work"; fi
-    git clone -b "$BTD_SOURCE_BRANCH" "$BTD_SOURCE_URL" ./btd-work
+    git clone -b "$BTD_SOURCE_BRANCH" "$BTD_SOURCE_URL" btd-work
     cd btd-work
     CLEAN_BTD="btd-work"
   fi
   
+  BTD_GH_USER="`echo "$BTD_SOURCE_URL" | cut -d'/' -f4`"
+  BTD_GH_REPO="`echo "$BTD_SOURCE_URL" | cut -d'/' -f5 | sed 's/\.git//g'`"
+  
   #--- Target repository
   
-  PARSED_BRANCH="$BTD_TARGET_BRANCH"
+  PARSED_BRANCH="$BTD_TARGET_REPO"
   parse_branch
-  if [ "`echo "$BTD_TARGET_BRANCH" | grep ":"`" = "" ]; then
+  if [ "`echo "$BTD_TARGET_REPO" | grep ":"`" = "" ]; then
     BTD_TARGET_URL="`git config remote.origin.url`"
   else
     BTD_TARGET_URL="$PARSED_URL"
@@ -211,15 +229,6 @@ btd_build() {
   
     echo "INSTALL_REQUIREMENTS: $INSTALL_REQUIREMENTS"
   
-    printf "$ANSI_DARKCYAN[BTD - build $1] Get theme(s) $ANSI_NOCOLOR\n"
-    if [ "$BTD_SPHINX_THEME" != "none" ]; then
-      mkdir -p theme-tmp
-      cd theme-tmp
-      curl -L "$BTD_SPHINX_THEME" | tar xvz --strip 1
-      zip -r "../$BTD_INPUT_DIR/sphinx_btd_theme.zip" ./*
-      cd .. && rm -rf theme-tmp
-    fi
-  
   #  for f in $(echo $BTD_FORMATS | sed 's/,/ /g'`); do
   #    echo "$f"
   #  done
@@ -228,7 +237,7 @@ btd_build() {
     travis_time_start
     printf "$ANSI_DARKCYAN[BTD - build $1] Run Sphinx $ANSI_NOCOLOR\n"
     docker run --rm -tv /$(pwd):/src -v btd-vol://_build "$BTD_IMG_SPHINX" sh -c "\
-      cd $BTD_INPUT_DIR && $INSTALL_REQUIREMENTS \
+      cd $BTD_INPUT_DIR && cat context.json && $INSTALL_REQUIREMENTS \
       sphinx-build -T -b html -D language=en . /_build/html && \
       sphinx-build -T -b json -d /_build/doctrees-json -D language=en . /_build/json && \
       sphinx-build -b latex -D language=en -d _build/doctrees . /_build/latex"
@@ -306,11 +315,57 @@ btd_build() {
     cd ../tmp-full
   fi
   
+  versions=""
+  for v in `echo "$BTD_VERSION" | sed 's/,/ /g'`; do
+    versions="$versions [\"$v\", \"../$v\"],"
+  done
+  printf "%s\n" \
+    "\"VERSIONING\": true" \
+    "\"current_version\": \"activeVersion\"" \
+    "\"versions\": [$versions ]" \
+  >> context.tmp
+  sed -i 's/], ]/] ]/g' context.tmp
+  last_line="\"downloads\": [ [\"PDF\", \"../pdf/activeVersion.pdf\"], [\"HTML\", \"../tgz/activeVersion.tgz\"] ]"
+  
+  if [ "$BTD_DISPLAY_GH" != "" ]; then
+    if [ "$last_line" != "" ]; then echo "$last_line" >> context.tmp; fi
+    subdir=""; if [ "$BTD_INPUT_DIR" != "" ]; then subdir="/$BTD_INPUT_DIR/"; fi
+    printf "%s\n" \
+      "\"display_github\": true" \
+      "\"github_user\": \"$BTD_GH_USER\"" \
+      "\"github_repo\": \"$BTD_GH_REPO\"" \
+    >> context.tmp
+    last_line="\"github_version\": \"activeVersion$subdir\""
+  fi
+  
+  echo "{" > context.json
+  while read -r line; do
+    printf "  %s,\n" "$line" >> context.json
+  done < context.tmp
+  printf "  $last_line\n" >> context.json
+  echo "}" >> context.json
+  
+  rm context.tmp
+  mv context.json $BTD_OUTPUT_DIR/context.json
+  
+  printf "$ANSI_DARKCYAN[BTD - build $1] Get theme(s) $ANSI_NOCOLOR\n"
+  mkdir $BTD_OUTPUT_DIR/themes
+  if [ "$BTD_SPHINX_THEME" != "none" ]; then
+    mkdir -p theme-tmp
+    cd theme-tmp
+    curl -L "$BTD_SPHINX_THEME" | tar xvz --strip 1
+    zip -r "$BTD_OUTPUT_DIR/themes/sphinx_btd_theme.zip" ./*
+    cd .. && rm -rf theme-tmp
+  fi
+  
   for v in `echo "$BTD_VERSION" | sed 's/,/ /g'`; do
     echo "travis_fold:start:$v"
     travis_time_start
     printf "$ANSI_DARKCYAN[BTD - build] Start $v $ANSI_NOCOLOR\n"
     git checkout $v
+    cp -r "$BTD_OUTPUT_DIR/themes/"* "$BTD_INPUT_DIR"
+    cp "$BTD_OUTPUT_DIR/context.json" "$BTD_INPUT_DIR"
+    sed -i 's/activeVersion/'"$v"'/g' "$BTD_INPUT_DIR/context.json"
     build_version "$v"
     mv "$BTD_OUTPUT_DIR/$v/html" "$BTD_OUTPUT_DIR/html/$v/"
     mv "$BTD_OUTPUT_DIR/$v/"*.pdf "$BTD_OUTPUT_DIR/html/pdf/"
@@ -325,10 +380,11 @@ btd_build() {
     cd "$current_pwd"
   fi
   
-  if [ "$CLEAN_BTD" != "" ]; then
+  if [ "$CLEAN_BTD" != "./" ]; then
     cd ..
     rm -rf "$CLEAN_BTD"
   fi
+  
 }
 
 #---

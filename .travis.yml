@@ -24,7 +24,7 @@ addons:
 #      tags: true
 
 stages:
-  - build images
+#  - build images
 #  - test
   - build and update gh-pages
 
@@ -44,8 +44,8 @@ jobs:
             repo: buildthedocs/btd
             branch: master
     - stage: build and update gh-pages
-      env: BTD_TARGET_BRANCH="https://github.com/buildthedocs/buildthedocs.github.io.git:master"
-      script: ./btd.sh build -v "master,demo"
+      env: BTD_TARGET_REPO="https://github.com/buildthedocs/buildthedocs.github.io.git:master"
+      script: ./btd.sh build -d -v "master,demo"
       deploy:
         - provider: script
           skip_cleanup: true
