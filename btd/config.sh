@@ -3,19 +3,20 @@
 for arg in $@; do
   shift
   case "$arg" in
-      "--config"|"-config")   set -- "$@" "-c";;
-      "--input"|"-input")     set -- "$@" "-i";;
-      "--output"|"-output")   set -- "$@" "-o";;
-      "--source"|"-source")   set -- "$@" "-s";;
-      "--target"|"-target")   set -- "$@" "-t";;
-      "--formats"|"-formats") set -- "$@" "-f";;
-      "--version"|"-version") set -- "$@" "-v";;
+      "--config"|"-config")    set -- "$@" "-c";;
+      "--input"|"-input")      set -- "$@" "-i";;
+      "--output"|"-output")    set -- "$@" "-o";;
+      "--source"|"-source")    set -- "$@" "-s";;
+      "--target"|"-target")    set -- "$@" "-t";;
+      "--formats"|"-formats")  set -- "$@" "-f";;
+      "--version"|"-version")  set -- "$@" "-v";;
+      "--name"|"--name")       set -- "$@" "-n";;
       "--disp_gh"|"--disp_gh") set -- "$@" "-d";;
     *) set -- "$@" "$arg"
   esac
 done
 # Parse args
-while getopts ":c:i:o:s:t:f:v:d" opt; do
+while getopts ":c:i:o:s:t:f:v:n:d" opt; do
   case $opt in
     c) BTD_CONFIG_FILE="$OPTARG";;
     i) BTD_INPUT_DIR="$OPTARG";;
@@ -24,6 +25,7 @@ while getopts ":c:i:o:s:t:f:v:d" opt; do
     t) BTD_TARGET_REPO="$OPTARG";;
     f) BTD_FORMATS="$OPTARG";;
     v) BTD_VERSION="$OPTARG";;
+    n) BTD_NAME="$OPTARG";;
     d) BTD_DISPLAY_GH="true";;
     \?) printf "$ANSI_RED[BTD - config] Invalid option: -$OPTARG $ANSI_NOCOLOR\n" >&2
 	exit 1 ;;
@@ -37,7 +39,9 @@ if [     "$BTD_INPUT_DIR" = "" ]; then     BTD_INPUT_DIR="doc";            fi
 if [    "$BTD_OUTPUT_DIR" = "" ]; then    BTD_OUTPUT_DIR="../btd_builds";  fi
 if [   "$BTD_TARGET_REPO" = "" ]; then   BTD_TARGET_REPO="gh-pages";       fi
 if [       "$BTD_FORMATS" = "" ]; then       BTD_FORMATS="html,pdf";       fi
+if [          "$BTD_NAME" = "" ]; then          BTD_NAME="BTD";            fi
 if [       "$BTD_VERSION" = "" ]; then       BTD_VERSION="master";         fi
+if [     "$BTD_LAST_INFO" = "" ]; then     BTD_LAST_INFO="Last updated on LAST_DATE [LAST_COMMIT - LAST_BUILD]"; fi
 if [    "$BTD_IMG_SPHINX" = "" ]; then    BTD_IMG_SPHINX="btdi/sphinx:py2-featured"; fi
 if [     "$BTD_IMG_LATEX" = "" ]; then     BTD_IMG_LATEX="btdi/latex";     fi
 if [  "$BTD_SPHINX_THEME" = "" ]; then  BTD_SPHINX_THEME="https://github.com/buildthedocs/sphinx_btd_theme/archive/master.tar.gz"; fi

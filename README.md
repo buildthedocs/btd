@@ -79,12 +79,14 @@ Options for the build can be defined in the following ways (from lower to higher
 | BTD_SOURCE_REPO | `-s` | `master` | |
 | BTD_TARGET_REPO | `-t` |  `gh-pages` | |
 | BTD_FORMATS | `-f` | `html,pdf` | comma delimited list of output formats |
+| BTD_NAME | `-n` | `BTD` | base name for artifacts (PDFs, tarballs...) |
 | BTD_VERSION | `-v` | `master` | comma delimited list of versions |
+| BTD_DISPLAY_GH | -d | | Display `Edit on GitHub` instead of `View page source` |
+| BTD_LAST_INFO | - | | Last updated info format |
 | BTD_IMG_SPHINX | - | `btdi/sphinx:py2-featured` | |
 | BTD_IMG_LATEX | - | `btdi/latex` | |
 | BTD_SPHINX_THEME | - | `https://github.com/buildthedocs/sphinx_btd_theme/archive/master.tar.gz` | |
 | BTD_DEPLOY_KEY | - | `deploy_key.enc` | |
-| BTD_DISPLAY_GH | -d | | Display `Edit on GitHub` instead of `View page source` |
 
 ---
 
@@ -107,6 +109,10 @@ If nothing is prepended to `<branch>`, the location of `.btd.yml` is considered 
 `BTD_SPHINX_THEME` is a comma separated list of URLs corresponding to tarballs/zip files that contain raw themes. These
 are downloaded and placed in `BTD_INPUT_DIR`. If the used theme is distributed as a python package, e.g. [rtfd/sphinx_rtd_theme](https://github.com/rtfd/sphinx_rtd_theme),
 it must be added to `requirements.txt` instead. See [Usage](http://buildthedocs.github.io/master/usage).
+
+---
+
+See details about the implementation of `BTD_DISPLAY_GH` and `BTD_LAST_INFO` at [Development](http://buildthedocs.github.io/master/development).
 
 # Similar projects
 

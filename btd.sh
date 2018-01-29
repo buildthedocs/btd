@@ -52,19 +52,20 @@ btd_config() {
   for arg in $@; do
     shift
     case "$arg" in
-        "--config"|"-config")   set -- "$@" "-c";;
-        "--input"|"-input")     set -- "$@" "-i";;
-        "--output"|"-output")   set -- "$@" "-o";;
-        "--source"|"-source")   set -- "$@" "-s";;
-        "--target"|"-target")   set -- "$@" "-t";;
-        "--formats"|"-formats") set -- "$@" "-f";;
-        "--version"|"-version") set -- "$@" "-v";;
+        "--config"|"-config")    set -- "$@" "-c";;
+        "--input"|"-input")      set -- "$@" "-i";;
+        "--output"|"-output")    set -- "$@" "-o";;
+        "--source"|"-source")    set -- "$@" "-s";;
+        "--target"|"-target")    set -- "$@" "-t";;
+        "--formats"|"-formats")  set -- "$@" "-f";;
+        "--version"|"-version")  set -- "$@" "-v";;
+        "--name"|"--name")       set -- "$@" "-n";;
         "--disp_gh"|"--disp_gh") set -- "$@" "-d";;
       *) set -- "$@" "$arg"
     esac
   done
   # Parse args
-  while getopts ":c:i:o:s:t:f:v:d" opt; do
+  while getopts ":c:i:o:s:t:f:v:n:d" opt; do
     case $opt in
       c) BTD_CONFIG_FILE="$OPTARG";;
       i) BTD_INPUT_DIR="$OPTARG";;
@@ -73,6 +74,7 @@ btd_config() {
       t) BTD_TARGET_REPO="$OPTARG";;
       f) BTD_FORMATS="$OPTARG";;
       v) BTD_VERSION="$OPTARG";;
+      n) BTD_NAME="$OPTARG";;
       d) BTD_DISPLAY_GH="true";;
       \?) printf "$ANSI_RED[BTD - config] Invalid option: -$OPTARG $ANSI_NOCOLOR\n" >&2
   	exit 1 ;;
@@ -86,7 +88,9 @@ btd_config() {
   if [    "$BTD_OUTPUT_DIR" = "" ]; then    BTD_OUTPUT_DIR="../btd_builds";  fi
   if [   "$BTD_TARGET_REPO" = "" ]; then   BTD_TARGET_REPO="gh-pages";       fi
   if [       "$BTD_FORMATS" = "" ]; then       BTD_FORMATS="html,pdf";       fi
+  if [          "$BTD_NAME" = "" ]; then          BTD_NAME="BTD";            fi
   if [       "$BTD_VERSION" = "" ]; then       BTD_VERSION="master";         fi
+  if [     "$BTD_LAST_INFO" = "" ]; then     BTD_LAST_INFO="Last updated on LAST_DATE [LAST_COMMIT - LAST_BUILD]"; fi
   if [    "$BTD_IMG_SPHINX" = "" ]; then    BTD_IMG_SPHINX="btdi/sphinx:py2-featured"; fi
   if [     "$BTD_IMG_LATEX" = "" ]; then     BTD_IMG_LATEX="btdi/latex";     fi
   if [  "$BTD_SPHINX_THEME" = "" ]; then  BTD_SPHINX_THEME="https://github.com/buildthedocs/sphinx_btd_theme/archive/master.tar.gz"; fi
@@ -254,7 +258,7 @@ btd_build() {
       pdflatex -interaction=nonstopmode \$FILE.tex; \
       makeindex -s python.ist \$FILE.idx; \
       pdflatex -interaction=nonstopmode \$FILE.tex; \
-      mv -f \$FILE.pdf /_build/\${FILE}_${1}.pdf"
+      mv -f \$FILE.pdf /_build/${BTD_NAME}_${1}.pdf"
     travis_time_finish
     echo "travis_fold:end:latex_$1"
   
@@ -283,6 +287,8 @@ btd_build() {
     rm_v btd-vol
   }
   
+  #--- Get absolute path of BTD_OUTPUT_DIR
+  
   echo "travis_fold:start:abs_output"
   printf "$ANSI_DARKCYAN[BTD - build] Get absolute path of BTD_OUTPUT_DIR $ANSI_NOCOLOR\n"
   if [ -d "$BTD_OUTPUT_DIR" ]; then rm -rf "$BTD_OUTPUT_DIR"; fi
@@ -292,6 +298,8 @@ btd_build() {
   BTD_OUTPUT_DIR="$(pwd)"
   cd -
   echo "travis_fold:end:abs_output"
+  
+  #--- Create index.html
   
   #echo "travis_fold:start:list"
   #travis_time_start
@@ -305,6 +313,8 @@ btd_build() {
   #travis_time_finish
   #echo "travis_fold:end:list"
   
+  #--- Get clean clone
+  
   current_branch="`git rev-parse --abbrev-ref HEAD`"
   
   if [ "$TRAVIS" = "true" ]; then
@@ -314,6 +324,74 @@ btd_build() {
     git clone -b "$current_branch" "`git remote get-url origin`" ../tmp-full
     cd ../tmp-full
   fi
+  
+  #--- Create context.json
+  
+  printf "$ANSI_DARKCYAN[BTD - build] Create context.json $ANSI_NOCOLOR\n"
+  
+  #- Latest date, commit, build...
+  
+  split_custom() {
+    if [ "$(echo $BTD_LAST_INFO | grep LAST_DATE)" != "" ]; then
+      printf "%s\n" \
+        "\"custom_last_pre\":\"$(echo $BTD_LAST_INFO | sed 's/\(.*\)LAST_DATE\(.*\)/\1/g')\"" \
+        "\"custom_last\":\"$(echo $BTD_LAST_INFO | sed 's/\(.*\)LAST_DATE\(.*\)/\2/g')\"" \
+      > context.tmp
+    else
+      printf "\"custom_last\":\"$BTD_LAST_INFO\"\n" > context.tmp
+    fi
+  }
+  
+  if [ "$TRAVIS" = "true" ]; then
+    BTD_COMMIT="$TRAVIS_COMMIT"
+    case $BTD_LAST_INFO in
+      "build")
+        printf "%s\n" \
+          "\"build_id\": \"$TRAVIS_JOB_NUMBER\"" \
+          "\"build_url\": \"https://travis-ci.org/$TRAVIS_REPO_SLUG/jobs/$TRAVIS_JOB_ID\"" \
+        > context.tmp
+      ;;
+      "commit")
+        printf "\"commit\": \"LAST_COMMIT\"\n" > context.tmp
+      ;;
+      "date")
+      ;;
+      *)
+        split_custom
+        last_build='<a href=\\"https://travis-ci.org/'"$TRAVIS_REPO_SLUG/builds/$TRAVIS_BUILD_ID"'\\">'"$TRAVIS_BUILD_NUMBER"'</a>.<a href=\\"https://travis-ci.org/'"$TRAVIS_REPO_SLUG/jobs/$TRAVIS_JOB_ID"'\\">'"$(echo $TRAVIS_JOB_NUMBER | cut -d"." -f2)"'</a>'
+        sed -i 's@LAST_BUILD@'"$last_build"'@g' context.tmp
+      ;;
+    esac
+  else
+    if [ -d ".git" ] && [ "`command -v git`" != "" ]; then
+      BTD_COMMIT="$(git rev-parse --verify HEAD)"
+    fi
+    case $BTD_LAST_INFO in
+      "build")
+        printf "%s\n" \
+          "\"build_id\": \"BUILD_ID\"" \
+          "\"build_url\": \"BUILD_URL\"" \
+        > context.tmp
+      ;;
+      "commit")
+        printf "\"commit\": \"LAST_COMMIT\"\n" > context.tmp
+      ;;
+      "date")
+      ;;
+      *)
+        split_custom
+      ;;
+    esac
+  fi
+  
+  if [ "$BTD_DISPLAY_GH" != "" ]; then
+    last_commit='<a href=\\"'"`echo "$BTD_SOURCE_URL" | sed 's/\.git$//g'`/commit/$BTD_COMMIT"'\\">'"`echo "$BTD_COMMIT" | cut -c1-8`</a>"
+  else
+    last_commit="`echo "$BTD_COMMIT" | cut -c1-8`"
+  fi
+  sed -i 's@LAST_COMMIT@'"$last_commit"'@g' context.tmp
+  
+  #- Versions
   
   versions=""
   for v in `echo "$BTD_VERSION" | sed 's/,/ /g'`; do
@@ -325,7 +403,9 @@ btd_build() {
     "\"versions\": [$versions ]" \
   >> context.tmp
   sed -i 's/], ]/] ]/g' context.tmp
-  last_line="\"downloads\": [ [\"PDF\", \"../pdf/activeVersion.pdf\"], [\"HTML\", \"../tgz/activeVersion.tgz\"] ]"
+  last_line="\"downloads\": [ [\"PDF\", \"../pdf/${BTD_NAME}_activeVersion.pdf\"], [\"HTML\", \"../tgz/${BTD_NAME}_activeVersion.tgz\"] ]"
+  
+  #- View/edit on GitHub
   
   if [ "$BTD_DISPLAY_GH" != "" ]; then
     if [ "$last_line" != "" ]; then echo "$last_line" >> context.tmp; fi
@@ -348,6 +428,8 @@ btd_build() {
   rm context.tmp
   mv context.json $BTD_OUTPUT_DIR/context.json
   
+  #--- Get themes
+  
   printf "$ANSI_DARKCYAN[BTD - build $1] Get theme(s) $ANSI_NOCOLOR\n"
   mkdir $BTD_OUTPUT_DIR/themes
   if [ "$BTD_SPHINX_THEME" != "none" ]; then
@@ -357,6 +439,8 @@ btd_build() {
     zip -r "$BTD_OUTPUT_DIR/themes/sphinx_btd_theme.zip" ./*
     cd .. && rm -rf theme-tmp
   fi
+  
+  #--- Run builds(s) for each version
   
   for v in `echo "$BTD_VERSION" | sed 's/,/ /g'`; do
     echo "travis_fold:start:$v"
@@ -368,11 +452,13 @@ btd_build() {
     sed -i 's/activeVersion/'"$v"'/g' "$BTD_INPUT_DIR/context.json"
     build_version "$v"
     mv "$BTD_OUTPUT_DIR/$v/html" "$BTD_OUTPUT_DIR/html/$v/"
-    mv "$BTD_OUTPUT_DIR/$v/"*.pdf "$BTD_OUTPUT_DIR/html/pdf/"
+    mv "$BTD_OUTPUT_DIR/$v/${BTD_NAME}_${v}.pdf" "$BTD_OUTPUT_DIR/html/pdf/"
     travis_time_finish
     echo "travis_fold:end:$v"
     printf "$ANSI_DARKCYAN[BTD - build] End $v $ANSI_NOCOLOR\n"
   done
+  
+  #--- Back to original branch
   
   git checkout "$current_branch"
   

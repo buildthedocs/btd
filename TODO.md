@@ -7,11 +7,14 @@
     - https://sphinx-rtd-theme.readthedocs.io/en/latest/#via-git-or-download
 - Generate `context.json` dynamically:
   - Make the versions menu point to the same page, not to the root of the version.
-- Provide both "Edit on GitHub" and "View on GitHub"
-- https://stackoverflow.com/questions/39007271/why-doesnt-readthedocs-show-last-updated-on
-  - http://www.sphinx-doc.org/en/stable/config.html#confval-html_last_updated_fmt
+  - Make the commit SHA point to the latest change of each page, not the commit that triggered the build.
+- Provide both "Edit on GitHub" and "View on GitHub".
 - https://www.mathjax.org/cdn-shutting-down/
 - How to customize the builder/build process
+- Support to build/update a single version, instead of building all the versions every time. To allow so, subdirs corresponding
+to other versions should be kept in the target repo.
+- Improve detection of changes. Since last build info is provided in the footer, a new commit will be always pushed, even
+if sources did not change. Changes to sources should be considered only.
 
 ---
 
