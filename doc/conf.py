@@ -128,14 +128,15 @@ except Exception as ex:
 # a list of builtin themes.
 #html_theme = 'alabaster'
 html_theme = "sphinx_btd_theme"
-# Override default css to get a larger width for ReadTheDoc build
+# Override default css
 html_context = {
     'css_files': [
-        'https://media.readthedocs.org/css/sphinx_rtd_theme.css',
-        'https://media.readthedocs.org/css/readthedocs-doc-embed.css',
         '_static/theme_overrides.css',
     ]
 }
+
+#'https://media.readthedocs.org/css/sphinx_rtd_theme.css',
+#'https://media.readthedocs.org/css/readthedocs-doc-embed.css',
 
 # Add display_github and VERSIONING data
 if isfile('context.json'):
