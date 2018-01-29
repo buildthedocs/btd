@@ -73,7 +73,7 @@ Options for the build can be defined in the following ways (from lower to higher
 
 | envvar | cli | default | |
 |-|-|-|-|
-| BTD_CONFIG_FILE | `-c` | `./.btd.yml` | |
+| BTD_CONFIG_FILE | `-c` | `./.btd.yml` | WIP |
 | BTD_INPUT_DIR | `-i` | `doc/` | |
 | BTD_OUTPUT_DIR | `-o` | `../btd_builds/` | |
 | BTD_SOURCE_REPO | `-s` | `master` | |
@@ -81,11 +81,11 @@ Options for the build can be defined in the following ways (from lower to higher
 | BTD_FORMATS | `-f` | `html,pdf` | comma delimited list of output formats |
 | BTD_NAME | `-n` | `BTD` | base name for artifacts (PDFs, tarballs...) |
 | BTD_VERSION | `-v` | `master` | comma delimited list of versions |
-| BTD_DISPLAY_GH | -d | | Display `Edit on GitHub` instead of `View page source` |
-| BTD_LAST_INFO | - | | Last updated info format |
+| BTD_DISPLAY_GH | `-d` | | Display `Edit on GitHub` instead of `View page source` |
+| BTD_LAST_INFO | - | `Last updated on LAST_DATE [LAST_COMMIT - LAST_BUILD]` | Last updated info format |
 | BTD_IMG_SPHINX | - | `btdi/sphinx:py2-featured` | |
 | BTD_IMG_LATEX | - | `btdi/latex` | |
-| BTD_SPHINX_THEME | - | `https://github.com/buildthedocs/sphinx_btd_theme/archive/master.tar.gz` | |
+| BTD_SPHINX_THEME | - | `https://github.com/buildthedocs/sphinx_btd_theme/archive/btd.tar.gz` | |
 | BTD_DEPLOY_KEY | - | `deploy_key.enc` | |
 
 ---
