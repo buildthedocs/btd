@@ -57,6 +57,16 @@ build_version() {
 #    echo "$f"
 #  done
 
+
+
+  if [ "$BTD_FORMAT_HTML" != "" ]; then
+
+  fi
+
+  if [ "$BTD_FORMAT_PDF" != "" ]; then
+
+  fi
+
   echo "travis_fold:start:sphinx_$1"
   travis_time_start
   printf "$ANSI_DARKCYAN[BTD - build $1] Run Sphinx $ANSI_NOCOLOR\n"
@@ -67,6 +77,8 @@ build_version() {
     sphinx-build -b latex -D language=en -d _build/doctrees . /_build/latex"
   travis_time_finish
   echo "travis_fold:end:sphinx_$1"
+
+
 
   echo "travis_fold:start:latex_$1"
   travis_time_start
