@@ -47,7 +47,7 @@ WORKDIR /src
 #> PANDOC
 
 FROM do-latex AS do-pandoc
-RUN apt-get update -y && apt-get -y install pandoc
+RUN apt-get update -y && apt-get -y install pandoc pandoc-citeproc
 
 #> HUGO Python 3.6
 # TODO https://gist.github.com/steinwaywhw/a4cd19cda655b8249d908261a62687f8

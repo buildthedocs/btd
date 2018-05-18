@@ -48,7 +48,7 @@ build_version() {
     else
       REQ_PREFIX="../";
     fi
-    INSTALL_REQUIREMENTS="pip2 install --exists-action=w -r ${REQ_PREFIX}requirements.txt &&";
+    INSTALL_REQUIREMENTS="pip install --exists-action=w -r ${REQ_PREFIX}requirements.txt &&";
   fi
 
   echo "INSTALL_REQUIREMENTS: $INSTALL_REQUIREMENTS"
