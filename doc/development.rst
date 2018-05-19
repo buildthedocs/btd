@@ -2,7 +2,8 @@
 Development
 ===========
 
-## Modifying and testing docker images
+Modifying and testing docker images
+-----------------------------------
 
 [`Dockerfile`](https://github.com/1138-4EB/buildthedocs/blob/master/Dockerfile) contains definitions of all the images,
 by making the best of docker [multi-stage builds](https://docs.docker.com/engine/userguide/eng-image/multistage-build/).
@@ -24,7 +25,8 @@ most of the features; and it will build a few versions of it.
 Any image name can be used, i.e., you can build `<your_registry>/<your_username>/<image_name>:<tag>` and push
 the image to your own repo/registry. Then, set `BTD_IMG_SPHINX` and/or `BTD_IMG_LATEX` accordingly.
 
-## Commit messages
+Commit messages
+---------------
 
 Some Travis CI stages are conditionally executed:
 
@@ -42,7 +44,8 @@ respectively. Any content prepended or appended to the block will only be availa
 Do never edit `btd.sh` directly. Shall you want to modify any subcommand, edit the corresponding source and run
 `pack.sh`.
 
-## `BTD_DISPLAY_GH`
+`BTD_DISPLAY_GH`
+----------------
 
 If ennvar `BTD_DISPLAY_GH` is not empty, the following fields are added to `context.json`:
 
@@ -63,7 +66,8 @@ where
 When `context.json` is appended to `html_context` in the `conf.py` file, the content of these fields is used to replace
 `View page source` with `Edit on GitHub`.
 
-## `BTD_LAST_INFO`
+`BTD_LAST_INFO`
+---------------
 
 Last updated info format is defined with ennvar `BTD_LAST_INFO`.
 
