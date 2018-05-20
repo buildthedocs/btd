@@ -45,24 +45,13 @@ This project comprises:
 - (optional) A `Dockerfile`.
 - (optional) A CI configuration file (`.travis.yml`).
 
-Therefore, you just need to get the sources using any of the options below:
-
-- Get the single script version from [release](https://github.com/1138-4EB/buildthedocs/releases).
-- Get the latest archive ([ZIP](https://github.com/1138-4EB/readthedocs-docker-images/archive/master.zip) or [TAR.GZ](https://github.com/1138-4EB/readthedocs-docker-images/archive/master.tar.gz)).
-- Add this project as a submodule of yours.
-
-Shall you want to automatically deploy the build site to GitHub Pages or any other hosting service, you need to properly
-configure access permissions for the CI tool (see [Site deployment](doc/site_deployment.md)).
+Therefore, you just need to get the sources using any of the options shown at [Installation](https://buildthedocs.github.io/master/installation.html). Shall you want to automatically deploy the build site to GitHub Pages or any other hosting service, you need to properly configure access permissions for the CI tool (see [Site deployment](doc/site_deployment.md)).
 
 # Use
-
-NOTE: the `conf.py` file of the Sphinx project might require some minor modifications. See [Usage](http://buildthedocs.github.io/master/usage).
 
 - (optional) Add the example `.btd.yml` file to your project and edit it to fit your use case. [WIP]
 - Run `btd.sh build`. See options below.
 - After a successful build, run `btd.sh deploy` to push changes to the hosting service.
-
----
 
 Options for the build can be defined in the following ways (from lower to higher precedence):
 
@@ -94,25 +83,7 @@ Options for the build can be defined in the following ways (from lower to higher
 - `-i` must lie inside the repository.
 - `-o` can be absolute, and it is recommended to be set out of the repository, e.g. `../btd_builds`.
 
----
-
-The supported format for `BTD_SOURCE_REPO` and `BTD_TARGET_REPO` is:
-
-``` bash
-[[<protocol>://<domain>/]<user>/<repo>:]<branch>[/subdir[/subsubdir[...]]]
-```
-
-If nothing is prepended to `<branch>`, the location of `.btd.yml` is considered to be a previously cloned git repository.
-
----
-
-`BTD_SPHINX_THEME` is a comma separated list of URLs corresponding to tarballs/zip files that contain raw themes. These
-are downloaded and placed in `BTD_INPUT_DIR`. If the used theme is distributed as a python package, e.g. [rtfd/sphinx_rtd_theme](https://github.com/rtfd/sphinx_rtd_theme),
-it must be added to `requirements.txt` instead. See [Usage](http://buildthedocs.github.io/master/usage).
-
----
-
-See details about the implementation of `BTD_DISPLAY_GH` and `BTD_LAST_INFO` at [Development](http://buildthedocs.github.io/master/development).
+NOTE: the `conf.py` file of the Sphinx project might require some minor modifications. See further info about it, `BTD_SOURCE_REPO`, `BTD_TARGET_REPO`, `BTD_SPHINX_THEME`, `BTD_DISPLAY_GH` and `BTD_LAST_INFO` at [Usage](https://buildthedocs.github.io/master/usage.html).
 
 # Similar projects
 
