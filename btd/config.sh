@@ -150,5 +150,8 @@ echo "---"
 echo "BTD_IMG_SPHINX: $BTD_IMG_SPHINX"
 echo "BTD_IMG_LATEX: $BTD_IMG_LATEX"
 echo "BTD_SPHINX_THEME: $BTD_SPHINX_THEME"
+echo "---"
+echo "BTD_GH_USER: $BTD_GH_USER"
+echo "BTD_GH_REPO: $BTD_GH_REPO"
 
 #<
