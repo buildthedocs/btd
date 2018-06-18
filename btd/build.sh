@@ -180,7 +180,7 @@ if [ "$TRAVIS" = "true" ]; then
     "build")
       printf "%s\n" \
         "\"build_id\": \"$TRAVIS_JOB_NUMBER\"" \
-        "\"build_url\": \"https://travis-ci.org/$TRAVIS_REPO_SLUG/jobs/$TRAVIS_JOB_ID\"" \
+        "\"build_url\": \"https://travis-ci.${BTD_TRAVIS}/${TRAVIS_REPO_SLUG}/jobs/${TRAVIS_JOB_ID}\"" \
       > context.tmp
     ;;
     "commit")
@@ -190,7 +190,7 @@ if [ "$TRAVIS" = "true" ]; then
     ;;
     *)
       split_custom
-      last_build='<a href=\\"https://travis-ci.org/'"$TRAVIS_REPO_SLUG/builds/$TRAVIS_BUILD_ID"'\\">'"$TRAVIS_BUILD_NUMBER"'</a>.<a href=\\"https://travis-ci.org/'"$TRAVIS_REPO_SLUG/jobs/$TRAVIS_JOB_ID"'\\">'"$(echo $TRAVIS_JOB_NUMBER | cut -d"." -f2)"'</a>'
+      last_build='<a href=\\"https://travis-ci.'"${BTD_TRAVIS}/${TRAVIS_REPO_SLUG}/builds/${TRAVIS_BUILD_ID}"'\\">'"${TRAVIS_BUILD_NUMBER}"'</a>.<a href=\\"https://travis-ci.'"${BTD_TRAVIS}/${TRAVIS_REPO_SLUG}/jobs/${TRAVIS_JOB_ID}"'\\">'"$(echo $TRAVIS_JOB_NUMBER | cut -d"." -f2)"'</a>'
       sed -i 's@LAST_BUILD@'"$last_build"'@g' context.tmp
     ;;
   esac
