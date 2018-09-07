@@ -36,12 +36,13 @@ RUN pip install -r /py_base_requirements.txt
 
 FROM do-sphinx__py3-base AS do-sphinx__py3-featured
 COPY py_featured_requirements.txt /
+RUN apk add -U --no-cache gcc linux-headers musl-dev
 RUN pip install -r /py_featured_requirements.txt
 
 #> LATEX
 
 FROM debian:stretch-slim AS do-latex
-RUN apt-get update -y && apt-get -y install texlive-full texlive-fonts-recommended texlive-latex-extra-doc
+RUN apt-get update -y && apt-get -y install make texlive-full texlive-fonts-recommended texlive-latex-extra-doc
 WORKDIR /src
 
 #> TEXSTUDIO
