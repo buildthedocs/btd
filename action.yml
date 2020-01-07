@@ -1,0 +1,11 @@
+name: 'BuildTheDocs GitHub Action'
+description: 'Build and publish Sphinx sites to GitHub Pages'
+inputs:
+  config:
+    description: 'YAML configuration file'
+    default: '.btd.yml'
+  token:
+    description: 'Token to make authenticated API calls'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'

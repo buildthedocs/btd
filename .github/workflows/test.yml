@@ -12,8 +12,46 @@ env:
 
 jobs:
 
-  test:
+  action:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
-    - run: ./btd.sh test
+    - uses: actions/checkout@v2
+    - uses: ./
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+  cli:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - run: |
+        pip3 install setuptools
+        pip3 install -r ./btd/requirements.txt
+    - run: ./btd/cli.py run
+
+  req:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - run: |
+        pip3 install setuptools
+        pip3 install -r ./btd/requirements.txt
+        pip3 install -r ./doc/requirements.txt
+    - run: ./btd/cli.py run
+
+#  doc:
+#    runs-on: ubuntu-latest
+#    steps:
+#    - uses: actions/checkout@v1
+#    - run: |
+#        ./shbtd/btd.sh build -d -v "master,demo"
+#        #./shbtd/btd.sh deploy
+#      env:
+#        GH_DEPKEY: ${{ secrets.GH_DEPKEY }}
+#        GH_SHA:    ${{ github.sha }}
+
+#  test:
+#    runs-on: ubuntu-latest
+#    steps:
+#    - uses: actions/checkout@v2
+#    - run: ./shbtd/btd.sh test

@@ -5,7 +5,6 @@ on:
     paths:
       - '.github/workflows/images.yml'
       - 'images/*'
-      - 'ci.sh'
   schedule:
     - cron: '0 0 * * 5'
 
@@ -15,36 +14,36 @@ env:
 
 jobs:
 
-  imgs:
+  multi:
     strategy:
       fail-fast: false
       matrix:
         file: [ sphinx, latex, hugo ]
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
-    - run: ./ci.sh "Dockerfile.${{ matrix.file }}"
-    - name: docker push
-      run: |
-        echo "${{ secrets.DOCKER_PASS }}" |\
-        docker login -u "${{ secrets.DOCKER_USER }}" --password-stdin
-
-        set +e
-
-        for img in `echo $(docker images btdi/* | awk -F ' ' '{print $1 ":" $2}') | cut -d ' ' -f2-`; do
-          docker push "$img"
-        done
-
-        docker logout
-
-  dev:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v1
-    - run: docker build -t btdi/dev - < images/Dockerfile.dev
+    - uses: actions/checkout@v2
+    - run: ./images/build.sh "${{ matrix.file }}.dockerfile"
     - name: docker push
       run: |
         echo "${{ secrets.DOCKER_PASS }}" | docker login -u "${{ secrets.DOCKER_USER }}" --password-stdin
         set +e
-        docker push btdi/dev
+        for img in `echo $(docker images btdi/* | awk -F ' ' '{print $1 ":" $2}') | cut -d ' ' -f2-`; do
+          docker push "$img"
+        done
+        docker logout
+
+  single:
+    strategy:
+      fail-fast: false
+      matrix:
+        file: [ btd, dev ]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - run: docker build -t btdi/${{ matrix.file }} . -f- < images/${{ matrix.file }}.dockerfile
+    - name: docker push
+      run: |
+        echo "${{ secrets.DOCKER_PASS }}" | docker login -u "${{ secrets.DOCKER_USER }}" --password-stdin
+        set +e
+        docker push btdi/${{ matrix.file }}
         docker logout

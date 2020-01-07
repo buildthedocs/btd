@@ -1,0 +1,36 @@
+# Path to input sources
+# Absolute or relative to the location of this configuration file
+input: doc
+
+# Path to save intermediate artifacts and products
+# Absolute or relative to 'input'
+output: _build
+
+# Path to an optional requirements file
+# Absolute or relative to 'input'
+#requirements:
+
+# Domain/repo/branch|tag where sources are located:
+#source: master
+
+# Domain/repo/branch and path where products are to be deployed:
+target: gh-pages
+
+# List of output formats
+formats: [ html, pdf, man ]
+
+# List of versions
+#versions:
+#  - id: master
+#    title: ""
+#    description: ""
+#    warning: ""
+#  - id: v0.0.0
+
+# Images to run commands in
+images:
+  latex: btdi/latex
+
+# Install theme from a repo or a tarball
+theme: https://github.com/buildthedocs/sphinx.theme/archive/master.tar.gz
+

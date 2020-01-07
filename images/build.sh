@@ -2,7 +2,7 @@
 
 set -e
 
-cd $(dirname "$0")/images
+cd $(dirname "$0")
 
 ANSI_RED="\033[31m"
 ANSI_GREEN="\033[32m"
