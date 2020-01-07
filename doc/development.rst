@@ -38,7 +38,7 @@ Also, :samp:`[ci skip]` prevents Travis CI from running any image at all.
 Packing shell scripts in a single file
 --------------------------------------
 
-:samp:`pack.sh` merges :samp:`ansi_color.sh`, :samp:`travis_utils.sh`, :samp:`config.sh`, :samp:`build.sh`, :samp:`images.sh`, :samp:`deploy.sh` and :samp:`test.sh` in
+:samp:`pack.sh` merges :samp:`utils.sh`, :samp:`config.sh`, :samp:`build.sh`, :samp:`deploy.sh` and :samp:`test.sh` in
 a single file named :samp:`btd.sh`. In each of the sources, `#>` and `#<` indicate the first and last lines that are copied,
 respectively. Any content prepended or appended to the block will only be available when sources are executed separately.
 

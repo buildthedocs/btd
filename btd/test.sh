@@ -4,8 +4,7 @@ set -e # Exit with nonzero exit code if anything fails
 
 scriptdir=$(dirname $0)
 
-. "${scriptdir}/ansi_color.sh"
-#disable_color
+. "${scriptdir}/utils.sh"
 
 #>
 printf "$ANSI_DARKCYAN[BTD] Test $ANSI_NOCOLOR\n"
@@ -33,8 +32,6 @@ exit 0
 
 #git clone https://github.com/buildthedocs/btd btd-full
 #cd btd-full
-
-#BTD_DEPLOY_KEY="travis/deploy_key.enc" ${scriptdir}/build.sh -o '../btd_full_builds' -v "master,featured"
 
 #cd ..
 #rm -rf btd-full

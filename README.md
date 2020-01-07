@@ -1,3 +1,12 @@
+<p align="center">
+  <a title="'images' workflow Status" href="https://github.com/buildthedocs/btd/actions?query=workflow%3Aimages"><img alt="'images' workflow Status" src="https://img.shields.io/github/workflow/status/buildthedocs/btd/images?longCache=true&style=flat-square&label=imgs"></a><!--
+  -->
+  <a title="'test' workflow Status" href="https://github.com/buildthedocs/btd/actions?query=workflow%3Atest"><img alt="'images' workflow Status" src="https://img.shields.io/github/workflow/status/buildthedocs/btd/test?longCache=true&style=flat-square&label=test"></a><!--
+  -->
+  <a title="'doc' workflow Status" href="https://github.com/buildthedocs/btd/actions?query=workflow%3Adoc"><img alt="'images' workflow Status" src="https://img.shields.io/github/workflow/status/buildthedocs/btd/doc?longCache=true&style=flat-square&label=doc"></a><!--
+  -->
+</p>
+
 - [About](#about-buildthedocs-btd)
 - [Install](#install)
 - [Use](#use)
@@ -25,8 +34,13 @@ both platforms.
 - Want to be able to generate/build the documentation in a machine and have the products optionally deployed to a
 hosting service automatically.
 
-The most expected use case is a project hosted on [GitHub](https://github.com), the web site hosted on
-[GitHub Pages](https://pages.github.com/) and using Travis CI to build the site after each push. Possible schemes:
+The most expected use case is:
+
+- Project hosted on [GitHub](https://github.com).
+- Web site hosted on [GitHub Pages](https://pages.github.com/).
+- A GitHub Actions workflow to build the site after each push.
+
+Possible schemes:
 
 - Save doc sources in:
   - A subdir of master/development branches.
@@ -42,10 +56,8 @@ This project comprises:
 
 - A bunch of shell scripts, optionally packed in a single file.
 - (optional) A configuration file (`.btd.yml`). [WIP]
-- (optional) A `Dockerfile`.
-- (optional) A CI configuration file (`.travis.yml`).
 
-Therefore, you just need to get the sources using any of the options shown at [Installation](https://buildthedocs.github.io/master/installation.html). Shall you want to automatically deploy the build site to GitHub Pages or any other hosting service, you need to properly configure access permissions for the CI tool (see [Site deployment](doc/site_deployment.md)).
+Therefore, you need to get the sources using any of the options shown at [Installation](https://buildthedocs.github.io/master/installation.html). Shall you want to automatically deploy the build site to GitHub Pages or any other hosting service, you need to properly configure access permissions for the CI tool (see [Site deployment](doc/site_deployment.md)).
 
 # Use
 
@@ -75,12 +87,10 @@ Options for the build can be defined in the following ways (from lower to higher
 | BTD_IMG_SPHINX | - | `btdi/sphinx:py2-featured` | |
 | BTD_IMG_LATEX | - | `btdi/latex` | |
 | BTD_SPHINX_THEME | - | `https://github.com/buildthedocs/sphinx_btd_theme/archive/btd.tar.gz` | |
-| BTD_DEPLOY_KEY | - | `deploy_key.enc` | |
-| BTD_TRAVIS | `g` | - | ref to `travis-ci.org` instead of `travis-ci.com` |
 
 ---
 
-- `-c`, `-i`, `-o` and `BTD_DEPLOY_KEY` are relative to the root of `-s`.
+- `-c`, `-i`, and `-o` are relative to the root of `-s`.
 - `-i` must lie inside the repository.
 - `-o` can be absolute, and it is recommended to be set out of the repository, e.g. `../btd_builds`.
 
@@ -92,10 +102,8 @@ NOTE: the `conf.py` file of the Sphinx project might require some minor modifica
 
 This project (BTD) started as an alternative to [readthedocs.org](https://readthedocs.org/) (RTD.org) for users that don't
 need most of the features that RTD.org provides as a service (webhooks, user/team/project management, web frontend or
-API to modify settings, etc) because they use a different web hosting service and a CI service, such as, GitHub Pages
-and Travis.
-
-See [rtfd/readthedocs-build#35](https://github.com/rtfd/readthedocs-build/issues/35).
+API to modify settings, etc), because they use a different web hosting service and a CI service, such as, GitHub Pages
+and GitHub Actions. See [rtfd/readthedocs-build#35](https://github.com/rtfd/readthedocs-build/issues/35).
 
 ## buildthedocs.pietroalbini.org
 
