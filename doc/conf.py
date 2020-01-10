@@ -73,7 +73,7 @@ except Exception as ex:
 # -- Options for HTML output ----------------------------------------------
 
 html_theme_path = ["."]
-html_theme = "sphinx_btd_theme"
+html_theme = "btd.sphinx.theme"
 
 html_context = {
     # Override default css

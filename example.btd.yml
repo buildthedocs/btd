@@ -28,7 +28,7 @@ images:
 
 # List of themes to be installed before executing sphinx
 theme: [
-  https://github.com/buildthedocs/sphinx_btd_theme/archive/master.tar.gz
+  https://github.com/buildthedocs/sphinx.theme/archive/master.tar.gz
 ]
 
 # Encrypted deploy key

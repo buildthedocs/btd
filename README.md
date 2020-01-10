@@ -86,7 +86,7 @@ Options for the build can be defined in the following ways (from lower to higher
 | BTD_LAST_INFO | - | `Last updated on LAST_DATE [LAST_COMMIT - LAST_BUILD]` | Last updated info format |
 | BTD_IMG_SPHINX | - | `btdi/sphinx:py2-featured` | |
 | BTD_IMG_LATEX | - | `btdi/latex` | |
-| BTD_SPHINX_THEME | - | `https://github.com/buildthedocs/sphinx_btd_theme/archive/btd.tar.gz` | |
+| BTD_SPHINX_THEME | - | `https://github.com/buildthedocs/sphinx.theme/archive/btd.tar.gz` | |
 
 ---
 
