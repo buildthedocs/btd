@@ -37,10 +37,14 @@ Possible schemes:
 
 # Usage
 
-This project is available as a Python package ([btd](btd)), along with the plumbing to use it as a GitHub Action. Use the Action for building and publishing the site:
+This project is available as a Python package ([btd](btd)), along with the plumbing to use it as a GitHub Action.
+
+Add a [`.btd.yml`](.btd.yml) configuration file to the root of the repo, and use the Action for building and publishing the docs:
 
 ```yaml
     - uses: buildthedocs/btd@action
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 # Similar projects
