@@ -39,13 +39,71 @@ Possible schemes:
 
 This project is available as a Python package ([btd](btd)), along with the plumbing to use it as a GitHub Action.
 
-Add a [`.btd.yml`](.btd.yml) configuration file to the root of the repo, and use the Action for building and publishing the docs:
+> If you want to deploy the generated docs into the `gh-pages` branch (good practice), create it.
+
+Copy the configuration file [`.btd.yml`](.btd.yml) (instructions inside) to the root of the repo, and modify it.
+
+Assuming for example, that the sources are under the `doc` directory, the `Makefile` for its generation must be inside of it (is triggered by BTD).
+Also, if needed, a `requeriments.txt` file can be provided in the same place, to indicate dependencies.
+
+Create the file `.github/workflows/doc.yml` (or choose your own name), with the following example code:
 
 ```yaml
-    - uses: buildthedocs/btd@action
+name: 'doc'
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: buildthedocs/btd@v0
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
+    - uses: actions/upload-artifact@master
+      with:
+        name: source
+        path: source/_build/html
 ```
+
+Push the changes to your repo and after finished, your documentation will be available at `https://<YOUR_USER>.github.io/<YOUR_REPO>`.
+
+# How to use the BTD
+
+> TODO: features here.
+
+Open your `conf.py` and add at the beggining:
+
+```py
+from json import loads
+from pathlib import Path
+```
+
+Then, replace `html_theme = "<YOUR_THEME"` by:
+
+```py
+html_theme_options = {
+    'logo_only': True,
+    'home_breadcrumbs': False,
+    'vcs_pageview_mode': 'blob',
+}
+
+html_context = {}
+ctx = Path(__file__).resolve().parent / 'context.json'
+if ctx.is_file():
+    html_context.update(loads(ctx.open('r').read()))
+
+html_theme_path = ["."]
+html_theme = "_theme"
+```
+
+> TODO: explain the options here
+
+> To test locally, an easy way is to download the [theme](https://codeload.github.com/buildthedocs/sphinx.theme/tar.gz/v0), descompress it, and put its content under the `_theme` directory.
 
 # Similar projects
 
