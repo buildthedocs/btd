@@ -34,7 +34,7 @@ jobs:
   action:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - uses: ./
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
@@ -42,7 +42,7 @@ jobs:
   action-skip:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - uses: ./
       with:
         skip-deploy: true
@@ -50,7 +50,7 @@ jobs:
   cli:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - run: |
         pip3 install setuptools
         pip3 install -r ./btd/requirements.txt
@@ -59,7 +59,7 @@ jobs:
   req:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - run: |
         pip3 install setuptools
         pip3 install -U Pygments
@@ -70,7 +70,7 @@ jobs:
 #  doc:
 #    runs-on: ubuntu-latest
 #    steps:
-#    - uses: actions/checkout@v1
+#    - uses: actions/checkout@v3
 #    - run: |
 #        ./shbtd/btd.sh build -d -v "master,demo"
 #        #./shbtd/btd.sh deploy
@@ -81,5 +81,5 @@ jobs:
 #  test:
 #    runs-on: ubuntu-latest
 #    steps:
-#    - uses: actions/checkout@v2
+#    - uses: actions/checkout@v3
 #    - run: ./shbtd/btd.sh test
