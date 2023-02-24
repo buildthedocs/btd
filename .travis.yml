@@ -45,7 +45,7 @@ jobs:
             branch: master
     - stage: build and update gh-pages
       env: BTD_TARGET_REPO="https://github.com/buildthedocs/buildthedocs.github.io.git:master"
-      script: ./btd.sh build -d -v "master,demo"
+      script: ./btd.sh build -d -g -v "master,demo"
       deploy:
         - provider: script
           skip_cleanup: true

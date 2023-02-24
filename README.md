@@ -67,7 +67,7 @@ Options for the build can be defined in the following ways (from lower to higher
 | BTD_OUTPUT_DIR | `-o` | `../btd_builds/` | |
 | BTD_SOURCE_REPO | `-s` | `master` | |
 | BTD_TARGET_REPO | `-t` |  `gh-pages` | |
-| BTD_FORMATS | `-f` | `html,pdf` | comma delimited list of output formats |
+| BTD_FORMATS | `-f` | `html,pdf` | WIP comma delimited list of output formats |
 | BTD_NAME | `-n` | `BTD` | base name for artifacts (PDFs, tarballs...) |
 | BTD_VERSION | `-v` | `master` | comma delimited list of versions |
 | BTD_DISPLAY_GH | `-d` | | Display `Edit on GitHub` instead of `View page source` |
@@ -76,6 +76,7 @@ Options for the build can be defined in the following ways (from lower to higher
 | BTD_IMG_LATEX | - | `btdi/latex` | |
 | BTD_SPHINX_THEME | - | `https://github.com/buildthedocs/sphinx_btd_theme/archive/btd.tar.gz` | |
 | BTD_DEPLOY_KEY | - | `deploy_key.enc` | |
+| BTD_TRAVIS | `g` | - | ref to `travis-ci.org` instead of `travis-ci.com` |
 
 ---
 

@@ -61,11 +61,12 @@ btd_config() {
         "--version"|"-version")  set -- "$@" "-v";;
         "--name"|"--name")       set -- "$@" "-n";;
         "--disp_gh"|"--disp_gh") set -- "$@" "-d";;
+        "--org"|"--org")         set -- "$@" "-g";;
       *) set -- "$@" "$arg"
     esac
   done
   # Parse args
-  while getopts ":c:i:o:s:t:f:v:n:d" opt; do
+  while getopts ":c:i:o:s:t:f:v:n:dg" opt; do
     case $opt in
       c) BTD_CONFIG_FILE="$OPTARG";;
       i) BTD_INPUT_DIR="$OPTARG";;
@@ -76,6 +77,7 @@ btd_config() {
       v) BTD_VERSION="$OPTARG";;
       n) BTD_NAME="$OPTARG";;
       d) BTD_DISPLAY_GH="true";;
+      g) BTD_TRAVIS="org";;
       \?) printf "$ANSI_RED[BTD - config] Invalid option: -$OPTARG $ANSI_NOCOLOR\n" >&2
   	exit 1 ;;
       :)  printf "$ANSI_RED[BTD - config] Option -$OPTARG requires an argument. $ANSI_NOCOLOR\n" >&2
@@ -83,18 +85,19 @@ btd_config() {
     esac
   done
   
-  if [   "$BTD_CONFIG_FILE" = "" ]; then   BTD_CONFIG_FILE=".btd.yml";       fi
-  if [     "$BTD_INPUT_DIR" = "" ]; then     BTD_INPUT_DIR="doc";            fi
-  if [    "$BTD_OUTPUT_DIR" = "" ]; then    BTD_OUTPUT_DIR="../btd_builds";  fi
-  if [   "$BTD_TARGET_REPO" = "" ]; then   BTD_TARGET_REPO="gh-pages";       fi
-  if [       "$BTD_FORMATS" = "" ]; then       BTD_FORMATS="html,pdf";       fi
-  if [          "$BTD_NAME" = "" ]; then          BTD_NAME="BTD";            fi
-  if [       "$BTD_VERSION" = "" ]; then       BTD_VERSION="master";         fi
-  if [     "$BTD_LAST_INFO" = "" ]; then     BTD_LAST_INFO="Last updated on LAST_DATE [LAST_COMMIT - LAST_BUILD]"; fi
-  if [    "$BTD_IMG_SPHINX" = "" ]; then    BTD_IMG_SPHINX="btdi/sphinx:py2-featured"; fi
-  if [     "$BTD_IMG_LATEX" = "" ]; then     BTD_IMG_LATEX="btdi/latex";     fi
-  if [  "$BTD_SPHINX_THEME" = "" ]; then  BTD_SPHINX_THEME="https://github.com/buildthedocs/sphinx_btd_theme/archive/btd.tar.gz"; fi
-  if [    "$BTD_DEPLOY_KEY" = "" ]; then    BTD_DEPLOY_KEY="deploy_key.enc"; fi
+  if [  "$BTD_CONFIG_FILE" = "" ]; then  BTD_CONFIG_FILE=".btd.yml";       fi
+  if [    "$BTD_INPUT_DIR" = "" ]; then    BTD_INPUT_DIR="doc";            fi
+  if [   "$BTD_OUTPUT_DIR" = "" ]; then   BTD_OUTPUT_DIR="../btd_builds";  fi
+  if [  "$BTD_TARGET_REPO" = "" ]; then  BTD_TARGET_REPO="gh-pages";       fi
+  if [      "$BTD_FORMATS" = "" ]; then      BTD_FORMATS="html,pdf";       fi
+  if [         "$BTD_NAME" = "" ]; then         BTD_NAME="BTD";            fi
+  if [      "$BTD_VERSION" = "" ]; then      BTD_VERSION="master";         fi
+  if [    "$BTD_LAST_INFO" = "" ]; then    BTD_LAST_INFO="Last updated on LAST_DATE [LAST_COMMIT - LAST_BUILD]"; fi
+  if [   "$BTD_IMG_SPHINX" = "" ]; then   BTD_IMG_SPHINX="btdi/sphinx:py2-featured"; fi
+  if [    "$BTD_IMG_LATEX" = "" ]; then    BTD_IMG_LATEX="btdi/latex";     fi
+  if [ "$BTD_SPHINX_THEME" = "" ]; then BTD_SPHINX_THEME="https://github.com/buildthedocs/sphinx_btd_theme/archive/btd.tar.gz"; fi
+  if [   "$BTD_DEPLOY_KEY" = "" ]; then   BTD_DEPLOY_KEY="deploy_key.enc"; fi
+  if [       "$BTD_TRAVIS" = "" ]; then       BTD_TRAVIS="com";            fi
   
   CLEAN_BTD=""
   
@@ -201,6 +204,8 @@ btd_config() {
   echo "---"
   echo "BTD_GH_USER: $BTD_GH_USER"
   echo "BTD_GH_REPO: $BTD_GH_REPO"
+  echo "---"
+  echo "BTD_TRAVIS: $BTD_TRAVIS"
   
 }
 
@@ -370,7 +375,7 @@ btd_build() {
       "build")
         printf "%s\n" \
           "\"build_id\": \"$TRAVIS_JOB_NUMBER\"" \
-          "\"build_url\": \"https://travis-ci.org/$TRAVIS_REPO_SLUG/jobs/$TRAVIS_JOB_ID\"" \
+          "\"build_url\": \"https://travis-ci.${BTD_TRAVIS}/${TRAVIS_REPO_SLUG}/jobs/${TRAVIS_JOB_ID}\"" \
         > context.tmp
       ;;
       "commit")
@@ -380,7 +385,7 @@ btd_build() {
       ;;
       *)
         split_custom
-        last_build='<a href=\\"https://travis-ci.org/'"$TRAVIS_REPO_SLUG/builds/$TRAVIS_BUILD_ID"'\\">'"$TRAVIS_BUILD_NUMBER"'</a>.<a href=\\"https://travis-ci.org/'"$TRAVIS_REPO_SLUG/jobs/$TRAVIS_JOB_ID"'\\">'"$(echo $TRAVIS_JOB_NUMBER | cut -d"." -f2)"'</a>'
+        last_build='<a href=\\"https://travis-ci.'"${BTD_TRAVIS}/${TRAVIS_REPO_SLUG}/builds/${TRAVIS_BUILD_ID}"'\\">'"${TRAVIS_BUILD_NUMBER}"'</a>.<a href=\\"https://travis-ci.'"${BTD_TRAVIS}/${TRAVIS_REPO_SLUG}/jobs/${TRAVIS_JOB_ID}"'\\">'"$(echo $TRAVIS_JOB_NUMBER | cut -d"." -f2)"'</a>'
         sed -i 's@LAST_BUILD@'"$last_build"'@g' context.tmp
       ;;
     esac

@@ -18,7 +18,6 @@ source_parsers = { '.md': CommonMarkParser, }
 sys.path.insert(0, abspath('.'))
 # sys.path.insert(0, abspath('../py'))
 sys.path.insert(0, abspath('_extensions'))
-# sys.path.insert(0, abspath('_themes/sphinx_btd_theme'))
 
 # -- General configuration ------------------------------------------------
 
