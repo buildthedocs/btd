@@ -5,10 +5,12 @@
 Examples
 ########
 
-:gh:`ghdl/ghdl` and :gh:`rodrigomelo9/FOSS-for-FPGAs` showcase the typical usage of BTD.
+:gh:`ghdl/ghdl-cosim` showcases the typical usage of BTD.
 
-In :gh:`ghdl/ghdl-cosim`, a different HTML documentation generator is executed before BTD. The content to be included
-in the final site is placed in a subdir, which is specified in the Sphinx configuration file (``doc.py``). For instance:
+In :gh:`ghdl/ghdl`, a different HTML documentation generator is executed before BTD.
+The content to be included in the final site is placed in a subdir, which is specified in the Sphinx configuration file
+(``doc.py``).
+For instance:
 
 .. code-block::
 
