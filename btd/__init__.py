@@ -11,7 +11,7 @@ from pathlib import Path
 from yaml import load, Loader, YAMLError
 from typing import List, Union
 
-from shutil import which
+from shutil import which, rmtree
 
 
 def startBlock(msg):
@@ -237,18 +237,22 @@ def getTheme(
     Check if the theme is available locally, retrieve it with curl and tar otherwise
     """
     tpath = path / '_theme'
-    if not tpath.is_dir() or not (tpath / 'theme.conf').is_file():
-        if not tpath.is_dir():
-            tpath.mkdir()
-        zpath = path / 'theme.tgz'
-        if not zpath.is_file():
-            check_call([
-                'curl', '-fsSL', url, '-o', str(zpath)
-            ])
-        tar_cmd = [
-            'tar', '--strip-components=1', '-C', str(tpath), '-xvzf', str(zpath)
-        ]
-        check_call(tar_cmd)
+    if tpath.is_dir() and (tpath / 'theme.conf').is_file():
+        return
+    if not tpath.is_dir():
+        tpath.mkdir()
+    zpath = path / 'theme.tgz'
+    if not zpath.is_file():
+        check_call(['curl', '-fsSL', url, '-o', str(zpath)])
+    check_call(['tar', '--strip-components=1', '-C', str(tpath), '-xvzf', str(zpath)])
+    isNonTaggedPath = tpath / "sphinx_btd_theme"
+    if isNonTaggedPath.exists() and (isNonTaggedPath / "layout.html").exists():
+        tmpPath = Path('tmp-theme')
+        if tmpPath.is_dir():
+            rmtree(str(tmpPath))
+        isNonTaggedPath.rename(tmpPath)
+        rmtree(str(tpath))
+        tmpPath.rename(tpath)
 
 
 def addCtx(idir):
