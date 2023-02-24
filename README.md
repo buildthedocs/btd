@@ -5,9 +5,9 @@
   -->
   <a title="Join the chat at gitter.im/buildthedocs/community" href="https://gitter.im/buildthedocs/community"><img src="https://img.shields.io/badge/chat-on%20gitter-4db797.svg?longCache=true&style=flat-square&logo=gitter&logoColor=e8ecef"></a><!--
   -->
-  <a title="'images' workflow Status" href="https://github.com/buildthedocs/btd/actions?query=workflow%3Aimages"><img alt="'images' workflow Status" src="https://img.shields.io/github/workflow/status/buildthedocs/btd/images/master?longCache=true&style=flat-square&logo=Github%20Actions&logoColor=e8ecef&label=imgs"></a><!--
+  <a title="'images' workflow Status" href="https://github.com/buildthedocs/btd/actions/workflows/images.yml"><img alt="'images' workflow Status" src="https://img.shields.io/github/actions/workflow/status/buildthedocs/btd/images.yml?branch=master&longCache=true&style=flat-square&logo=Github%20Actions&logoColor=e8ecef&label=imgs"></a><!--
   -->
-  <a title="'test' workflow Status" href="https://github.com/buildthedocs/btd/actions?query=workflow%3Atest"><img alt="'images' workflow Status" src="https://img.shields.io/github/workflow/status/buildthedocs/btd/test/master?longCache=true&style=flat-square&logo=Github%20Actions&logoColor=e8ecef&label=test"></a><!--
+  <a title="'test' workflow Status" href="https://github.com/buildthedocs/btd/actions/workflows/test.yml"><img alt="'test' workflow Status" src="https://img.shields.io/github/actions/workflow/status/buildthedocs/btd/test.yml?branch=master&longCache=true&style=flat-square&logo=Github%20Actions&logoColor=e8ecef&label=test"></a><!--
   -->
 </p>
 
