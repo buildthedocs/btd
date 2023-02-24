@@ -3,7 +3,7 @@ Helpers to build BTD documentation websites
 """
 
 from os import environ
-from subprocess import check_call, check_output, run
+from subprocess import call, check_call, check_output, run
 from json import dump, loads
 
 from sys import argv, executable, stdout
@@ -213,15 +213,18 @@ def BTDRun(nolocal=False):
 
     if 'pdf' in BTD_FORMATS:
         startBlock('Build PDF...')
-        check_call([
+        call([
             'docker',
             'run',
             '--rm',
+            '-e',
+            'LATEXMKOPTS=\'-interaction=nonstopmode\'',
             '-v',
             '%s:/src' % str(workRoot / BTD_OUTPUT_DIR / 'latex' ),
             BTD_IMGS['latex'],
             'make'
         ])
+
         endBlock()
 
 
