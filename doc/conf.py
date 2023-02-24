@@ -21,6 +21,7 @@ author = 'BTD contributors'
 # -- General configuration ---------------------------------------------------
 
 extensions = [
+    'sphinx.ext.extlinks',
 ]
 
 templates_path = ['_templates']
@@ -49,3 +50,11 @@ if ctx.is_file():
 
 html_theme_path = ["."]
 html_theme = "_theme"
+
+# -- Sphinx.Ext.ExtLinks -----------------------------------------------------
+
+extlinks = {
+    'gh': ('https://github.com/%s', ''),
+    'btdsharp': ('https://github.com/buildthedocs/btd/issues/%s', '#'),
+    'btdsrc':   ('https://github.com/buildthedocs/btd/blob/master/src/%s', None),
+}

@@ -1,20 +1,48 @@
-.. Build The Docs documentation master file, created by
-   sphinx-quickstart on Sat May  9 04:52:56 2020.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+.. program:: btd
 
-Welcome to Build The Docs's documentation!
-==========================================
+Build The Docs's documentation!
+###############################
+
+.. image:: _static/logo.png
+   :width: 175 px
+   :align: center
+   :target: https://github.com/buildthedocs/btd
+
+.. raw:: html
+
+    <p style="text-align: center;">
+      <a title="GitHub Repository" href="https://github.com/buildthedocs/btd"><img src="https://img.shields.io/badge/-buildthedocs/btd-323131.svg?longCache=true&style=flat-square&logo=github"></a><!--
+      -->
+      <a title="Join the chat at https://gitter.im/buildthedocs/community" href="https://gitter.im/buildthedocs/community"><img src="https://img.shields.io/badge/chat-on%20gitter-4db797.svg?longCache=true&style=flat-square&logo=gitter&logoColor=e8ecef"></a><!--
+      -->
+    </p>
+
+    <hr>
+
+This is the documentation of Build The Docs (BTD). BTD is a Python CLI tool for building documentation sites with static
+site generators and (optionally) uploading the output to git repositories. For easing the utilisation in GitHub Actions
+workspaces, a Docker Action is also provided. The Action wraps the CLI tool in a container and sets most parameters based
+on the context.
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :hidden:
+   :maxdepth: 4
+   :caption: Command-Line Interface
+
+   cli/usage
+   cli/themes
 
 
+.. toctree::
+   :hidden:
+   :maxdepth: 4
+   :caption: GitHub Actions
 
-Indices and tables
-==================
+   gha/action
+   gha/workflow
+   gha/examples
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+
+..  * :ref:`genindex`
+  * :ref:`modindex`
+  * :ref:`search`
