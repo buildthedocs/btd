@@ -1,8 +1,8 @@
-#! /bin/sh
+#!/usr/bin/env sh
 
 scriptdir=$(dirname $0)
 
-SOURCES="build images deploy test"
+SOURCES="build deploy test"
 
 add_subcmd() {
   X="`grep -n "#>" "${scriptdir}/$1".sh | sed -n 's/\(.*\):.*/\1/p'`"
@@ -15,7 +15,7 @@ add_subcmd() {
 BTD_FILE="${scriptdir}/../btd.sh"
 
 printf "%s\n" \
-  "#! /bin/sh" \
+  "#!/usr/bin/env sh" \
   "" \
   "set -e" \
   "" \
@@ -26,9 +26,8 @@ printf "%s\n" \
   "cd -" \
 > "$BTD_FILE"
 
-add_subcmd ansi_color >> "$BTD_FILE"
-printf "\n#---\n\n" >> "$BTD_FILE"
-add_subcmd travis_utils  >> "$BTD_FILE"
+printf "\n" >> "$BTD_FILE"
+cat "${scriptdir}"/utils.sh >> "$BTD_FILE"
 
 for f in config $SOURCES; do
   printf "\n#---\n\nbtd_$f() {\n"  >> "$BTD_FILE"

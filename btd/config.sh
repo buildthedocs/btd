@@ -12,12 +12,11 @@ for arg in $@; do
       "--version"|"-version")  set -- "$@" "-v";;
       "--name"|"--name")       set -- "$@" "-n";;
       "--disp_gh"|"--disp_gh") set -- "$@" "-d";;
-      "--org"|"--org")         set -- "$@" "-g";;
     *) set -- "$@" "$arg"
   esac
 done
 # Parse args
-while getopts ":c:i:o:s:t:f:v:n:dg" opt; do
+while getopts ":c:i:o:s:t:f:v:n:d" opt; do
   case $opt in
     c) BTD_CONFIG_FILE="$OPTARG";;
     i) BTD_INPUT_DIR="$OPTARG";;
@@ -28,7 +27,6 @@ while getopts ":c:i:o:s:t:f:v:n:dg" opt; do
     v) BTD_VERSION="$OPTARG";;
     n) BTD_NAME="$OPTARG";;
     d) BTD_DISPLAY_GH="true";;
-    g) BTD_TRAVIS="org";;
     \?) printf "$ANSI_RED[BTD - config] Invalid option: -$OPTARG $ANSI_NOCOLOR\n" >&2
 	exit 1 ;;
     :)  printf "$ANSI_RED[BTD - config] Option -$OPTARG requires an argument. $ANSI_NOCOLOR\n" >&2
@@ -44,11 +42,9 @@ if [      "$BTD_FORMATS" = "" ]; then      BTD_FORMATS="html,pdf";       fi
 if [         "$BTD_NAME" = "" ]; then         BTD_NAME="BTD";            fi
 if [      "$BTD_VERSION" = "" ]; then      BTD_VERSION="master";         fi
 if [    "$BTD_LAST_INFO" = "" ]; then    BTD_LAST_INFO="Last updated on LAST_DATE [LAST_COMMIT - LAST_BUILD]"; fi
-if [   "$BTD_IMG_SPHINX" = "" ]; then   BTD_IMG_SPHINX="btdi/sphinx:py2-featured"; fi
+if [   "$BTD_IMG_SPHINX" = "" ]; then   BTD_IMG_SPHINX="btdi/sphinx:featured"; fi
 if [    "$BTD_IMG_LATEX" = "" ]; then    BTD_IMG_LATEX="btdi/latex";     fi
-if [ "$BTD_SPHINX_THEME" = "" ]; then BTD_SPHINX_THEME="https://github.com/buildthedocs/sphinx_btd_theme/archive/btd.tar.gz"; fi
-if [   "$BTD_DEPLOY_KEY" = "" ]; then   BTD_DEPLOY_KEY="deploy_key.enc"; fi
-if [       "$BTD_TRAVIS" = "" ]; then       BTD_TRAVIS="com";            fi
+if [ "$BTD_SPHINX_THEME" = "" ]; then BTD_SPHINX_THEME="https://github.com/buildthedocs/sphinx_btd_theme/archive/master.tar.gz"; fi
 
 CLEAN_BTD=""
 
@@ -155,7 +151,5 @@ echo "BTD_SPHINX_THEME: $BTD_SPHINX_THEME"
 echo "---"
 echo "BTD_GH_USER: $BTD_GH_USER"
 echo "BTD_GH_REPO: $BTD_GH_REPO"
-echo "---"
-echo "BTD_TRAVIS: $BTD_TRAVIS"
 
 #<

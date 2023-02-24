@@ -1,20 +1,16 @@
 #!/bin/bash
 
-set -e # Exit with nonzero exit code if anything fails
+set -e
 
 scriptdir=$(dirname $0)
 
-. "${scriptdir}/travis_utils.sh"
-. "${scriptdir}/ansi_color.sh"
-#disable_color
+. "${scriptdir}/utils.sh"
 
 printf "$ANSI_DARKCYAN[BTD - build] Executing $0 `echo $@` $ANSI_NOCOLOR\n"
 
-echo "travis_fold:start:config"
-travis_time_start
+gstart "Config"
 . ${scriptdir}/config.sh
-travis_time_finish
-echo "travis_fold:end:config"
+gend
 
 #>
 
@@ -66,22 +62,15 @@ build_version() {
 #
 #  fi
 
-  echo "travis_fold:start:sphinx_$1"
-  travis_time_start
-  printf "$ANSI_DARKCYAN[BTD - build $1] Run Sphinx $ANSI_NOCOLOR\n"
+  gstart "[BTD - build $1] Run Sphinx"
   docker run --rm -tv /$(pwd):/src -v btd-vol://_build "$BTD_IMG_SPHINX" sh -c "\
     cd $BTD_INPUT_DIR && cat context.json && $INSTALL_REQUIREMENTS \
     sphinx-build -T -b html -D language=en . /_build/html && \
     sphinx-build -T -b json -d /_build/doctrees-json -D language=en . /_build/json && \
     sphinx-build -b latex -D language=en -d _build/doctrees . /_build/latex"
-  travis_time_finish
-  echo "travis_fold:end:sphinx_$1"
+  gend
 
-
-
-  echo "travis_fold:start:latex_$1"
-  travis_time_start
-  printf "$ANSI_DARKCYAN[BTD - build $1] Run LaTeX $ANSI_NOCOLOR\n"
+  gstart "[BTD - build $1] Run LaTeX"
   docker run --rm -tv /$(pwd):/src -v btd-vol://_build "$BTD_IMG_LATEX" sh -c "\
     cd $BTD_INPUT_DIR && \
     cd /_build/latex && \
@@ -90,12 +79,9 @@ build_version() {
     makeindex -s python.ist \$FILE.idx; \
     pdflatex -interaction=nonstopmode \$FILE.tex; \
     mv -f \$FILE.pdf /_build/${BTD_NAME}_${1}.pdf"
-  travis_time_finish
-  echo "travis_fold:end:latex_$1"
+  gend
 
-  echo "travis_fold:start:copy_$1"
-  travis_time_start
-  printf "$ANSI_DARKCYAN[BTD - build $1] Copy artifacts $ANSI_NOCOLOR\n"
+  gstart "[BTD - build $1] Copy artifacts"
   rm_c btd-box
   docker run --name btd-box -dv btd-vol://_build busybox sh -c "tail -f /dev/null"
   printf "Wait for btd-box to start...\n"
@@ -109,10 +95,10 @@ build_version() {
     sleep 1
   done
   printf "Copying...\n"
+  mkdir -p "$BTD_OUTPUT_DIR/$1/"
   docker cp "btd-box:_build/" "$BTD_OUTPUT_DIR/$1/"
   rm_c btd-box
-  travis_time_finish
-  echo "travis_fold:end:copy_$1"
+  gend
 
   printf "$ANSI_DARKCYAN[BTD - build $1] Remove volume btd-vol $ANSI_NOCOLOR\n"
   rm_v btd-vol
@@ -120,8 +106,7 @@ build_version() {
 
 #--- Get absolute path of BTD_OUTPUT_DIR
 
-echo "travis_fold:start:abs_output"
-printf "$ANSI_DARKCYAN[BTD - build] Get absolute path of BTD_OUTPUT_DIR $ANSI_NOCOLOR\n"
+gstart "[BTD - build] Get absolute path of BTD_OUTPUT_DIR"
 if [ -d "$BTD_OUTPUT_DIR" ]; then rm -rf "$BTD_OUTPUT_DIR"; fi
 mkdir -p "$BTD_OUTPUT_DIR"
 cd "$BTD_OUTPUT_DIR"
@@ -129,33 +114,22 @@ mkdir -p html/pdf
 mkdir -p html/tgz
 BTD_OUTPUT_DIR="$(pwd)"
 cd -
-echo "travis_fold:end:abs_output"
+gend
 
 #--- Create index.html
 
-#echo "travis_fold:start:list"
-#travis_time_start
-printf "$ANSI_DARKCYAN[BTD - build] Create index.html $ANSI_NOCOLOR\n"
+gstart "[BTD - build] Create index.html"
 printf "<html><head><meta http-equiv=\"refresh\" content=\"0; url=`echo "$BTD_VERSION" | cut -d ',' -f1`\"></head><body></body>\n" > "$BTD_OUTPUT_DIR/html/index.html"
 #for v in `echo "$BTD_VERSION" | sed 's/,/ /g'`; do
 #  printf "<a href=\"$v\">$v</a>\n" >> "index.html"
 #done
 #printf "</body>\n" >> "index.html"
 #mv "index.html" "$BTD_OUTPUT_DIR/html/index.html"
-#travis_time_finish
-#echo "travis_fold:end:list"
+gend
 
 #--- Get clean clone
 
 current_branch="`git rev-parse --abbrev-ref HEAD`"
-
-if [ "$TRAVIS" = "true" ]; then
-  printf "$ANSI_DARKCYAN[BTD - build] Get clean clone $ANSI_NOCOLOR\n"
-  current_branch="$TRAVIS_BRANCH"
-  current_pwd="`pwd`"
-  git clone --recursive -b "$current_branch" "`git remote get-url origin`" ../tmp-full
-  cd ../tmp-full
-fi
 
 #--- Create context.json
 
@@ -174,43 +148,22 @@ split_custom() {
   fi
 }
 
-if [ "$TRAVIS" = "true" ]; then
-  case $BTD_LAST_INFO in
-    "build")
-      printf "%s\n" \
-        "\"build_id\": \"$TRAVIS_JOB_NUMBER\"" \
-        "\"build_url\": \"https://travis-ci.${BTD_TRAVIS}/${TRAVIS_REPO_SLUG}/jobs/${TRAVIS_JOB_ID}\"" \
-      > context.tmp
-    ;;
-    "commit")
-      printf "\"commit\": \"LAST_COMMIT\"\n" > context.tmp
-    ;;
-    "date")
-    ;;
-    *)
-      split_custom
-      last_build='<a href=\\"https://travis-ci.'"${BTD_TRAVIS}/${TRAVIS_REPO_SLUG}/builds/${TRAVIS_BUILD_ID}"'\\">'"${TRAVIS_BUILD_NUMBER}"'</a>.<a href=\\"https://travis-ci.'"${BTD_TRAVIS}/${TRAVIS_REPO_SLUG}/jobs/${TRAVIS_JOB_ID}"'\\">'"$(echo $TRAVIS_JOB_NUMBER | cut -d"." -f2)"'</a>'
-      sed -i 's@LAST_BUILD@'"$last_build"'@g' context.tmp
-    ;;
-  esac
-else
-  case $BTD_LAST_INFO in
-    "build")
-      printf "%s\n" \
-        "\"build_id\": \"BUILD_ID\"" \
-        "\"build_url\": \"BUILD_URL\"" \
-      > context.tmp
-    ;;
-    "commit")
-      printf "\"commit\": \"LAST_COMMIT\"\n" > context.tmp
-    ;;
-    "date")
-    ;;
-    *)
-      split_custom
-    ;;
-  esac
-fi
+case $BTD_LAST_INFO in
+  "build")
+    printf "%s\n" \
+      "\"build_id\": \"BUILD_ID\"" \
+      "\"build_url\": \"BUILD_URL\"" \
+    > context.tmp
+  ;;
+  "commit")
+    printf "\"commit\": \"LAST_COMMIT\"\n" > context.tmp
+  ;;
+  "date")
+  ;;
+  *)
+    split_custom
+  ;;
+esac
 
 if [ "$BTD_DISPLAY_GH" != "" ]; then
   last_commit='<a href=\\"'"`echo "$BTD_SOURCE_URL" | sed 's/\.git$//g'`/commit/BTD_COMMIT_PLACEHOLDER"'\\">BTD_COMMIT_SHORT_PLACEHOLDER</a>'
@@ -258,21 +211,20 @@ mv context.json $BTD_OUTPUT_DIR/context.json
 
 #--- Get themes
 
-printf "$ANSI_DARKCYAN[BTD - build $1] Get theme(s) $ANSI_NOCOLOR\n"
+gstart "[BTD - build $1] Get theme(s)"
 mkdir $BTD_OUTPUT_DIR/themes
 if [ "$BTD_SPHINX_THEME" != "none" ]; then
   mkdir -p theme-tmp
   cd theme-tmp
-  curl -L "$BTD_SPHINX_THEME" | tar xvz --strip 1
+  curl -L "$BTD_SPHINX_THEME" | tar xvz --strip 2 sphinx_btd_theme-master/dist
   zip -r "$BTD_OUTPUT_DIR/themes/sphinx_btd_theme.zip" ./*
   cd .. && rm -rf theme-tmp
 fi
+gend
 
 #--- Run builds(s) for each version
 
 for v in `echo "$BTD_VERSION" | sed 's/,/ /g'`; do
-  echo "travis_fold:start:$v"
-  travis_time_start
   printf "$ANSI_DARKCYAN[BTD - build] Start $v $ANSI_NOCOLOR\n"
   git checkout $v
   cp -r "$BTD_OUTPUT_DIR/themes/"* "$BTD_INPUT_DIR"
@@ -282,22 +234,16 @@ for v in `echo "$BTD_VERSION" | sed 's/,/ /g'`; do
   sed -i 's/BTD_COMMIT_PLACEHOLDER/'"$BTD_COMMIT"'/g' "$BTD_INPUT_DIR/context.json"
   sed -i 's/BTD_COMMIT_SHORT_PLACEHOLDER/'`echo "$BTD_COMMIT" | cut -c1-8`'/g' "$BTD_INPUT_DIR/context.json"
   build_version "$v"
-  mv "$BTD_OUTPUT_DIR/$v/${BTD_NAME}_${v}.pdf" "$BTD_OUTPUT_DIR/html/pdf/"
-  mv "$BTD_OUTPUT_DIR/$v" "$BTD_OUTPUT_DIR/${BTD_NAME}_$v"
+  odir="$BTD_OUTPUT_DIR/$v/_build"
+  mv "$odir/${BTD_NAME}_${v}.pdf" "$BTD_OUTPUT_DIR/html/pdf/"
+  mv "$odir" "$BTD_OUTPUT_DIR/${BTD_NAME}_$v"
   tar cvzf "$BTD_OUTPUT_DIR/html/tgz/${BTD_NAME}_${v}".tgz -C "$BTD_OUTPUT_DIR" "${BTD_NAME}_$v"
   mv "$BTD_OUTPUT_DIR/${BTD_NAME}_$v/html" "$BTD_OUTPUT_DIR/html/$v/"
-  travis_time_finish
-  echo "travis_fold:end:$v"
-  printf "$ANSI_DARKCYAN[BTD - build] End $v $ANSI_NOCOLOR\n"
 done
 
 #--- Back to original branch
 
 git checkout "$current_branch"
-
-if [ "$TRAVIS" = "true" ]; then
-  cd "$current_pwd"
-fi
 
 if [ "$CLEAN_BTD" != "./" ]; then
   cd ..
