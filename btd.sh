@@ -316,6 +316,7 @@ btd_build() {
   mkdir -p "$BTD_OUTPUT_DIR"
   cd "$BTD_OUTPUT_DIR"
   mkdir -p html/pdf
+  mkdir -p html/tgz
   BTD_OUTPUT_DIR="$(pwd)"
   cd -
   echo "travis_fold:end:abs_output"
@@ -472,8 +473,10 @@ btd_build() {
     cp "$BTD_OUTPUT_DIR/context.json" "$BTD_INPUT_DIR"
     sed -i 's/activeVersion/'"$v"'/g' "$BTD_INPUT_DIR/context.json"
     build_version "$v"
-    mv "$BTD_OUTPUT_DIR/$v/html" "$BTD_OUTPUT_DIR/html/$v/"
     mv "$BTD_OUTPUT_DIR/$v/${BTD_NAME}_${v}.pdf" "$BTD_OUTPUT_DIR/html/pdf/"
+    mv "$BTD_OUTPUT_DIR/$v" "$BTD_OUTPUT_DIR/${BTD_NAME}_$v"
+    tar cvzf "$BTD_OUTPUT_DIR/html/tgz/${BTD_NAME}_${v}".tgz -C "$BTD_OUTPUT_DIR" "${BTD_NAME}_$v"
+    mv "$BTD_OUTPUT_DIR/${BTD_NAME}_$v/html" "$BTD_OUTPUT_DIR/html/$v/"
     travis_time_finish
     echo "travis_fold:end:$v"
     printf "$ANSI_DARKCYAN[BTD - build] End $v $ANSI_NOCOLOR\n"
