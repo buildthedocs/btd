@@ -373,6 +373,10 @@ btd_deploy() {
   git config user.name "Travis CI @ BTD"
   git config user.email "travis@buildthedocs.btd"
   
+  printf "\n$ANSI_DARKCYAN[BTD - deploy] Add .nojekyll$ANSI_NOCOLOR\n"
+  #https://help.github.com/articles/files-that-start-with-an-underscore-are-missing/
+  touch .nojekyll
+  
   printf "\n$ANSI_DARKCYAN[BTD - deploy] Add changes$ANSI_NOCOLOR\n"
   git add .
   # If there are no changes to the compiled out (e.g. this is a README update) then just bail.
