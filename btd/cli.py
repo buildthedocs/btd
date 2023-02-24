@@ -10,22 +10,22 @@ from pyAttributes.ArgParseAttributes import (
     CommandAttribute,
     CommonSwitchArgumentAttribute,
     DefaultAttribute,
-    SwitchArgumentAttribute
+    SwitchArgumentAttribute,
 )
 
 from __init__ import BTDConfigFile, BTDRun
 
 
-class Tool():
+class Tool:
     HeadLine = "Build The Docs CLI"
 
     def __init__(self):
         pass
 
     def PrintHeadline(self):
-      print("{line}".format(line="="*80))
-      print("{headline: ^80s}".format(headline=self.HeadLine))
-      print("{line}".format(line="="*80))
+        print("{line}".format(line="=" * 80))
+        print("{headline: ^80s}".format(headline=self.HeadLine))
+        print("{line}".format(line="=" * 80))
 
     @staticmethod
     def run():
@@ -33,30 +33,34 @@ class Tool():
 
 
 class WithBuildAttributes(Attribute):
-  def __call__(self, func):
-    self._AppendAttribute(func, SwitchArgumentAttribute("--dry-run", dest="dry_run", help="Print build commands but do not execute them."))
-    # ... add more if needed
-    return func
+    def __call__(self, func):
+        self._AppendAttribute(
+            func,
+            SwitchArgumentAttribute("--dry-run", dest="dry_run", help="Print build commands but do not execute them."),
+        )
+        # ... add more if needed
+        return func
 
 
 class CLI(Tool, ArgParseMixin):
     def __init__(self):
         import argparse
         import textwrap
+
         # Call constructor of the main interitance tree
         super().__init__()
         # Call constructor of the ArgParseMixin
         ArgParseMixin.__init__(
-          self,
-          description=textwrap.dedent('Helper tool to build and publish Sphinx docs.'),
-          epilog=textwrap.fill("Happy hacking!"),
-          formatter_class=argparse.RawDescriptionHelpFormatter,
-          add_help=False
+            self,
+            description=textwrap.dedent("Helper tool to build and publish Sphinx docs."),
+            epilog=textwrap.fill("Happy hacking!"),
+            formatter_class=argparse.RawDescriptionHelpFormatter,
+            add_help=False,
         )
 
-    @CommonSwitchArgumentAttribute("-q", "--quiet",   dest="quiet",   help="Reduce messages to a minimum.")
+    @CommonSwitchArgumentAttribute("-q", "--quiet", dest="quiet", help="Reduce messages to a minimum.")
     @CommonSwitchArgumentAttribute("-v", "--verbose", dest="verbose", help="Print out detailed messages.")
-    @CommonSwitchArgumentAttribute("-d", "--debug",   dest="debug",   help="Enable debug mode.")
+    @CommonSwitchArgumentAttribute("-d", "--debug", dest="debug", help="Enable debug mode.")
     def Run(self):
         ArgParseMixin.Run(self)
 
@@ -66,12 +70,14 @@ class CLI(Tool, ArgParseMixin):
         self.MainParser.print_help()
 
     @CommandAttribute("help", help="Display help page(s) for the given command name.")
-    @ArgumentAttribute(metavar="<Command>", dest="Command", type=str, nargs="?", help="Print help page(s) for a command.")
+    @ArgumentAttribute(
+        metavar="<Command>", dest="Command", type=str, nargs="?", help="Print help page(s) for a command."
+    )
     def HandleHelp(self, args):
-        if (args.Command == "help"):
+        if args.Command == "help":
             print("This is a recursion ...")
             return
-        if (args.Command is None):
+        if args.Command is None:
             self.PrintHeadline()
             self.MainParser.print_help()
         else:
@@ -84,6 +90,7 @@ class CLI(Tool, ArgParseMixin):
     @CommandAttribute("run", help="Run.")
     def HandleRun(self, _):
         self.run()
+
 
 if __name__ == "__main__":
     CLI().Run()
