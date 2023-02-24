@@ -46,6 +46,7 @@ on the context.
    :hidden:
    :caption: Appendix
 
+   similar_projects
    references
 
 
