@@ -162,7 +162,8 @@ def BTDRun(nolocal=False):
 
             with (BTD_INPUT_DIR / 'btd_make.sh').open('w') as fptr:
                 fptr.write('#!/usr/bin/env sh\n')
-                fptr.write('pip install -r %s\n' % str(Path('/src') / BTD_REQUIREMENTS))
+                if BTD_REQUIREMENTS.exists():
+                    fptr.write('pip install -r %s\n' % str(Path('/src') / BTD_REQUIREMENTS))
                 fptr.write('make %s\n' % fmt)
                 fptr.flush()
 
