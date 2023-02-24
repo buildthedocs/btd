@@ -36,7 +36,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        file: [ btd, dev ]
+        file: [ btd, dev, bookdown ]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
