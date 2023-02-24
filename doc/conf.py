@@ -139,7 +139,7 @@ html_context = {
     'github_version': 'master/doc/',
 	'VERSIONING': True,
 	'current_version': 'master',
-    'versions': [ ['master', '../master'], ['featured', '../featured'] ],
+    'versions': [ ['master', '../master'], ['demo', '../demo'] ],
     'downloads': [ ['PDF', '/master.pdf'], ['HTML', '/master.tgz'] ]
 }
 
