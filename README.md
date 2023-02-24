@@ -118,7 +118,7 @@ See details about the implementation of `BTD_DISPLAY_GH` and `BTD_LAST_INFO` at 
 
 ## ReadTheDocs.org (RTD.org)
 
-This project started as an alternative to [readthedocs.org](https://readthedocs.org/) (RTD.org) for users that don't
+This project (BTD) started as an alternative to [readthedocs.org](https://readthedocs.org/) (RTD.org) for users that don't
 need most of the features that RTD.org provides as a service (webhooks, user/team/project management, web frontend or
 API to modify settings, etc) because they use a different web hosting service and a CI service, such as, GitHub Pages
 and Travis.
@@ -138,3 +138,7 @@ dependencies pre-installed.
 [single](https://github.com/1138-4EB/buildthedocs/releases) shell script as unique dependencies. Multiple
 [docker images](https://hub.docker.com/u/btdi/) with pre-installed dependencies are used to provide ready-to-use
 environments for each task.
+
+## sphinxcontrib-versioning
+
+[Robpol86/sphinxcontrib-versioning](https://github.com/Robpol86/sphinxcontrib-versioning)
