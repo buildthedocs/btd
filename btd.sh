@@ -82,7 +82,7 @@ btd_config() {
   	exit 1 ;;
     esac
   done
-
+  
   if [   "$BTD_CONFIG_FILE" = "" ]; then   BTD_CONFIG_FILE=".btd.yml";       fi
   if [     "$BTD_INPUT_DIR" = "" ]; then     BTD_INPUT_DIR="doc";            fi
   if [    "$BTD_OUTPUT_DIR" = "" ]; then    BTD_OUTPUT_DIR="../btd_builds";  fi
@@ -95,16 +95,24 @@ btd_config() {
   if [     "$BTD_IMG_LATEX" = "" ]; then     BTD_IMG_LATEX="btdi/latex";     fi
   if [  "$BTD_SPHINX_THEME" = "" ]; then  BTD_SPHINX_THEME="https://github.com/buildthedocs/sphinx_btd_theme/archive/btd.tar.gz"; fi
   if [    "$BTD_DEPLOY_KEY" = "" ]; then    BTD_DEPLOY_KEY="deploy_key.enc"; fi
-
+  
   if [   "$BTD_SOURCE_REPO" = "" ]; then
     BTD_SOURCE_REPO="master";
     if [ -d ".git" ] && [ "`command -v git`" != "" ]; then
       BTD_SOURCE_REPO="`git remote get-url origin`:master"
     fi
   fi
-
+  
+  if [ "$(echo $BTD_FORMATS | grep html)" != "" ]; then
+    BTD_FORMAT_HTML="true";
+  fi
+  
+  if [ "$(echo $BTD_FORMATS | grep pdf)" != "" ]; then
+    BTD_FORMAT_PDF="true";
+  fi
+  
   #---
-
+  
   parse_branch() {
     if [ "$PARSED_BRANCH" != "" ]; then
       if [ "`echo "$PARSED_BRANCH" | grep ":"`" != "" ]; then
@@ -117,21 +125,21 @@ btd_config() {
         fi
         PARSED_BRANCH="`echo "$PARSED_BRANCH" | cut -d':' -f$CUT_BRANCH`"
       fi
-
+  
       if [ "`echo "$PARSED_BRANCH" | grep "/"`" != "" ]; then
         PARSED_DIR="`echo "$PARSED_BRANCH" | cut -d'/' -f2-`"
         PARSED_BRANCH="`echo "$PARSED_BRANCH" | cut -d'/' -f1`"
       fi
-
+  
       if [ "`echo "$PARSED_BRANCH" | grep "/"`" != "" ]; then
         PARSED_DIR="`echo "$PARSED_BRANCH" | cut -d'/' -f2-`"
         PARSED_BRANCH="`echo "$PARSED_BRANCH" | cut -d'/' -f1`"
       fi
     fi
   }
-
+  
   #--- Source repository and input dir
-
+  
   PARSED_BRANCH="$BTD_SOURCE_REPO"
   parse_branch
   BTD_SOURCE_URL="$PARSED_URL"
@@ -139,12 +147,12 @@ btd_config() {
   if [ "$PARSED_DIR" != "" ]; then
     BTD_INPUT_DIR="$PARSED_DIR"
   fi
-
+  
   CLEAN_BTD=""
   if [ "$BTD_SOURCE_URL" = "" ]; then
     CLEAN_BTD="./"
   fi
-
+  
   if [ "$CLEAN_BTD" = "" ]; then
     printf "$ANSI_DARKCYAN[BTD - config] Clone -b $BTD_SOURCE_BRANCH $BTD_SOURCE_URL $ANSI_NOCOLOR\n"
     cd ..
@@ -153,12 +161,12 @@ btd_config() {
     cd btd-work
     CLEAN_BTD="btd-work"
   fi
-
+  
   BTD_GH_USER="`echo "$BTD_SOURCE_URL" | cut -d'/' -f4`"
   BTD_GH_REPO="`echo "$BTD_SOURCE_URL" | cut -d'/' -f5 | sed 's/\.git//g'`"
-
+  
   #--- Target repository
-
+  
   PARSED_BRANCH="$BTD_TARGET_REPO"
   parse_branch
   if [ "`echo "$BTD_TARGET_REPO" | grep ":"`" = "" ]; then
@@ -170,11 +178,11 @@ btd_config() {
   if [ "$PARSED_DIR" != "" ]; then
     BTD_TARGET_DIR="$PARSED_DIR"
   fi
-
+  
   #---
-
+  
   printf "$ANSI_DARKCYAN[BTD - config] Parsed options:$ANSI_NOCOLOR\n"
-
+  
   echo "BTD_CONFIG_FILE: $BTD_CONFIG_FILE"
   echo "BTD_FORMATS: $BTD_FORMATS"
   echo "BTD_VERSION: $BTD_VERSION"
@@ -191,13 +199,13 @@ btd_config() {
   echo "BTD_IMG_SPHINX: $BTD_IMG_SPHINX"
   echo "BTD_IMG_LATEX: $BTD_IMG_LATEX"
   echo "BTD_SPHINX_THEME: $BTD_SPHINX_THEME"
-
+  
 }
 
 #---
 
 btd_build() {
-
+  
   check_v() { r="1"; if [ -n "$(docker volume inspect $1 2>&1 | grep "Error:")" ]; then r="0"; fi; echo "$r"; }
   rm_v() {
     if [ "$(check_v $1)" = "1" ]; then
@@ -205,7 +213,7 @@ btd_build() {
       docker volume rm "$1";
     fi;
   }
-
+  
   check_c() { r="1"; if [ -n "$(docker container inspect $1 2>&1 | grep "Error:")" ]; then r="0"; fi; echo "$r"; }
   rm_c() {
     if [ "$(check_c $1)" = "1" ]; then
@@ -213,14 +221,14 @@ btd_build() {
       docker rm -f "$1";
     fi;
   }
-
+  
   build_version() {
     rm_c btd-box
     rm_v btd-vol
-
+  
     printf "$ANSI_DARKCYAN[BTD - build $1] Create volume btd-vol $ANSI_NOCOLOR\n"
     docker volume create btd-vol
-
+  
     printf "$ANSI_DARKCYAN[BTD - build $1] Check if requirements.txt exists $ANSI_NOCOLOR\n"
     if [ -f "./requirements.txt" ] || [ -f "./$BTD_INPUT_DIR/requirements.txt" ]; then
       if [ -f "./$BTD_INPUT_DIR/requirements.txt" ]; then
@@ -230,13 +238,22 @@ btd_build() {
       fi
       INSTALL_REQUIREMENTS="pip install --exists-action=w -r ${REQ_PREFIX}requirements.txt &&";
     fi
-
+  
     echo "INSTALL_REQUIREMENTS: $INSTALL_REQUIREMENTS"
-
+  
   #  for f in $(echo $BTD_FORMATS | sed 's/,/ /g'`); do
   #    echo "$f"
   #  done
-
+  #
+  #
+  #  if [ "$BTD_FORMAT_HTML" != "" ]; then
+  #
+  #  fi
+  #
+  #  if [ "$BTD_FORMAT_PDF" != "" ]; then
+  #
+  #  fi
+  
     echo "travis_fold:start:sphinx_$1"
     travis_time_start
     printf "$ANSI_DARKCYAN[BTD - build $1] Run Sphinx $ANSI_NOCOLOR\n"
@@ -247,7 +264,9 @@ btd_build() {
       sphinx-build -b latex -D language=en -d _build/doctrees . /_build/latex"
     travis_time_finish
     echo "travis_fold:end:sphinx_$1"
-
+  
+  
+  
     echo "travis_fold:start:latex_$1"
     travis_time_start
     printf "$ANSI_DARKCYAN[BTD - build $1] Run LaTeX $ANSI_NOCOLOR\n"
@@ -261,7 +280,7 @@ btd_build() {
       mv -f \$FILE.pdf /_build/${BTD_NAME}_${1}.pdf"
     travis_time_finish
     echo "travis_fold:end:latex_$1"
-
+  
     echo "travis_fold:start:copy_$1"
     travis_time_start
     printf "$ANSI_DARKCYAN[BTD - build $1] Copy artifacts $ANSI_NOCOLOR\n"
@@ -282,13 +301,13 @@ btd_build() {
     rm_c btd-box
     travis_time_finish
     echo "travis_fold:end:copy_$1"
-
+  
     printf "$ANSI_DARKCYAN[BTD - build $1] Remove volume btd-vol $ANSI_NOCOLOR\n"
     rm_v btd-vol
   }
-
+  
   #--- Get absolute path of BTD_OUTPUT_DIR
-
+  
   echo "travis_fold:start:abs_output"
   printf "$ANSI_DARKCYAN[BTD - build] Get absolute path of BTD_OUTPUT_DIR $ANSI_NOCOLOR\n"
   if [ -d "$BTD_OUTPUT_DIR" ]; then rm -rf "$BTD_OUTPUT_DIR"; fi
@@ -298,9 +317,9 @@ btd_build() {
   BTD_OUTPUT_DIR="$(pwd)"
   cd -
   echo "travis_fold:end:abs_output"
-
+  
   #--- Create index.html
-
+  
   #echo "travis_fold:start:list"
   #travis_time_start
   printf "$ANSI_DARKCYAN[BTD - build] Create index.html $ANSI_NOCOLOR\n"
@@ -312,25 +331,25 @@ btd_build() {
   #mv "index.html" "$BTD_OUTPUT_DIR/html/index.html"
   #travis_time_finish
   #echo "travis_fold:end:list"
-
+  
   #--- Get clean clone
-
+  
   current_branch="`git rev-parse --abbrev-ref HEAD`"
-
+  
   if [ "$TRAVIS" = "true" ]; then
     printf "$ANSI_DARKCYAN[BTD - build] Get clean clone $ANSI_NOCOLOR\n"
     current_branch="$TRAVIS_BRANCH"
     current_pwd="`pwd`"
-    git clone -b "$current_branch" "`git remote get-url origin`" ../tmp-full
+    git clone --recursive -b "$current_branch" "`git remote get-url origin`" ../tmp-full
     cd ../tmp-full
   fi
-
+  
   #--- Create context.json
-
+  
   printf "$ANSI_DARKCYAN[BTD - build] Create context.json $ANSI_NOCOLOR\n"
-
+  
   #- Latest date, commit, build...
-
+  
   split_custom() {
     if [ "$(echo $BTD_LAST_INFO | grep LAST_DATE)" != "" ]; then
       printf "%s\n" \
@@ -341,7 +360,7 @@ btd_build() {
       printf "\"custom_last\":\"$BTD_LAST_INFO\"\n" > context.tmp
     fi
   }
-
+  
   if [ "$TRAVIS" = "true" ]; then
     BTD_COMMIT="$TRAVIS_COMMIT"
     case $BTD_LAST_INFO in
@@ -383,16 +402,16 @@ btd_build() {
       ;;
     esac
   fi
-
+  
   if [ "$BTD_DISPLAY_GH" != "" ]; then
     last_commit='<a href=\\"'"`echo "$BTD_SOURCE_URL" | sed 's/\.git$//g'`/commit/$BTD_COMMIT"'\\">'"`echo "$BTD_COMMIT" | cut -c1-8`</a>"
   else
     last_commit="`echo "$BTD_COMMIT" | cut -c1-8`"
   fi
   sed -i 's@LAST_COMMIT@'"$last_commit"'@g' context.tmp
-
+  
   #- Versions
-
+  
   versions=""
   for v in `echo "$BTD_VERSION" | sed 's/,/ /g'`; do
     versions="$versions [\"$v\", \"../$v\"],"
@@ -404,9 +423,9 @@ btd_build() {
   >> context.tmp
   sed -i 's/], ]/] ]/g' context.tmp
   last_line="\"downloads\": [ [\"PDF\", \"../pdf/${BTD_NAME}_activeVersion.pdf\"], [\"HTML\", \"../tgz/${BTD_NAME}_activeVersion.tgz\"] ]"
-
+  
   #- View/edit on GitHub
-
+  
   if [ "$BTD_DISPLAY_GH" != "" ]; then
     if [ "$last_line" != "" ]; then echo "$last_line" >> context.tmp; fi
     subdir=""; if [ "$BTD_INPUT_DIR" != "" ]; then subdir="/$BTD_INPUT_DIR/"; fi
@@ -417,19 +436,19 @@ btd_build() {
     >> context.tmp
     last_line="\"github_version\": \"activeVersion$subdir\""
   fi
-
+  
   echo "{" > context.json
   while read -r line; do
     printf "  %s,\n" "$line" >> context.json
   done < context.tmp
   printf "  $last_line\n" >> context.json
   echo "}" >> context.json
-
+  
   rm context.tmp
   mv context.json $BTD_OUTPUT_DIR/context.json
-
+  
   #--- Get themes
-
+  
   printf "$ANSI_DARKCYAN[BTD - build $1] Get theme(s) $ANSI_NOCOLOR\n"
   mkdir $BTD_OUTPUT_DIR/themes
   if [ "$BTD_SPHINX_THEME" != "none" ]; then
@@ -439,9 +458,9 @@ btd_build() {
     zip -r "$BTD_OUTPUT_DIR/themes/sphinx_btd_theme.zip" ./*
     cd .. && rm -rf theme-tmp
   fi
-
+  
   #--- Run builds(s) for each version
-
+  
   for v in `echo "$BTD_VERSION" | sed 's/,/ /g'`; do
     echo "travis_fold:start:$v"
     travis_time_start
@@ -457,20 +476,20 @@ btd_build() {
     echo "travis_fold:end:$v"
     printf "$ANSI_DARKCYAN[BTD - build] End $v $ANSI_NOCOLOR\n"
   done
-
+  
   #--- Back to original branch
-
+  
   git checkout "$current_branch"
-
+  
   if [ "$TRAVIS" = "true" ]; then
     cd "$current_pwd"
   fi
-
+  
   if [ "$CLEAN_BTD" != "./" ]; then
     cd ..
     rm -rf "$CLEAN_BTD"
   fi
-
+  
 }
 
 #---
@@ -496,30 +515,30 @@ btd_deploy() {
       printf "\nSkipping pages deploy\n"
       exit 0
   fi
-
+  
   #SOURCE_BRANCH="builders"
   #TARGET_BRANCH="gh-pages"
   #REPO=`git config remote.origin.url`
-
+  
   printf "\n$ANSI_DARKCYAN[BTD - deploy] Clone '$BTD_TARGET_URL:$BTD_TARGET_BRANCH/$BTD_TARGET_DIR' to 'out' and clean existing contents$ANSI_NOCOLOR\n"
   git clone -b "$BTD_TARGET_BRANCH" "$BTD_TARGET_URL" out
-
+  
   OUTDIR="out"
   if [ "$BTD_TARGET_DIR" = "" ]; then
     OUTDIR="out/$BTD_TARGET_DIR"
   fi
   rm -rf "$OUTDIR"/**/* || exit 0
-
+  
   cp -r "$BTD_OUTPUT_DIR/html"/. "$OUTDIR"
   cd out
-
+  
   git config user.name "Travis CI @ BTD"
   git config user.email "travis@buildthedocs.btd"
-
+  
   printf "\n$ANSI_DARKCYAN[BTD - deploy] Add .nojekyll$ANSI_NOCOLOR\n"
   #https://help.github.com/articles/files-that-start-with-an-underscore-are-missing/
   touch .nojekyll
-
+  
   printf "\n$ANSI_DARKCYAN[BTD - deploy] Add changes$ANSI_NOCOLOR\n"
   git add .
   # If there are no changes to the compiled out (e.g. this is a README update) then just bail.
@@ -528,12 +547,12 @@ btd_deploy() {
       exit 0
   fi
   git commit -am "BTD deploy: `git rev-parse --verify HEAD`"
-
+  
   printf "\n$ANSI_DARKCYAN[BTD - deploy] Get the deploy key $ANSI_NOCOLOR\n"
   # by using Travis's stored variables to decrypt deploy_key.enc
   eval `ssh-agent -s`
   openssl aes-256-cbc -K $encrypted_0198ee37cbd2_key -iv $encrypted_0198ee37cbd2_iv -in ../"$BTD_DEPLOY_KEY" -d | ssh-add -
-
+  
   printf "\n$ANSI_DARKCYAN[BTD - deploy] Push to $BTD_TARGET_BRANCH $ANSI_NOCOLOR\n"
   # Now that we're all set up, we can push.
   git push `echo "$BTD_TARGET_URL" | sed -e 's/https:\/\/github.com\//git@github.com:/g'` $TARGET_BRANCH
@@ -543,37 +562,37 @@ btd_deploy() {
 
 btd_test() {
   printf "$ANSI_DARKCYAN[BTD] Test $ANSI_NOCOLOR\n"
-
+  
   VERSIONS_btd="master,featured"
   VERSIONS_ghdl="master,v0.35,v0.34"
   VERSIONS_PoC="master,relese"
-
+  
   for prj in "buildthedocs/btd" "ghdl/ghdl" "1138-4EB/PoC"; do
     p="`echo $prj | cut -d'/' -f2`"
-
+  
     git clone "https://github.com/$prj" "${p}-test"
     cd "${p}-test"
-
+  
     VERSIONS="VERSIONS_${p}"
     if [ "$p" = "PoC" ]; then INPUT="-i docs"; fi
     "$BTD_SH" build -o "../${p}_test_builds" -v "${!VERSIONS}" $INPUT
-
+  
     cd ..
     rm -rf "$p"
     rm -rf "${p}_test_builds"
   done
-
+  
   exit 0
-
+  
   #git clone https://github.com/buildthedocs/btd btd-full
   #cd btd-full
-
+  
   #BTD_DEPLOY_KEY="travis/deploy_key.enc" "$BTD_SH" build -o '../btd_full_builds' -v "master,featured"
-
+  
   #cd ..
   #rm -rf btd-full
   #rm -rf btd_full_builds
-
+  
   #git clone https://github.com/VLSI-EDA/PoC
   #cd PoC
   #curl -L https://raw.githubusercontent.com/buildthedocs/btd/master/btd.sh | sh -s build -v "release,stable" -i docs

@@ -56,16 +56,15 @@ build_version() {
 #  for f in $(echo $BTD_FORMATS | sed 's/,/ /g'`); do
 #    echo "$f"
 #  done
-
-
-
-  if [ "$BTD_FORMAT_HTML" != "" ]; then
-
-  fi
-
-  if [ "$BTD_FORMAT_PDF" != "" ]; then
-
-  fi
+#
+#
+#  if [ "$BTD_FORMAT_HTML" != "" ]; then
+#
+#  fi
+#
+#  if [ "$BTD_FORMAT_PDF" != "" ]; then
+#
+#  fi
 
   echo "travis_fold:start:sphinx_$1"
   travis_time_start
@@ -153,7 +152,7 @@ if [ "$TRAVIS" = "true" ]; then
   printf "$ANSI_DARKCYAN[BTD - build] Get clean clone $ANSI_NOCOLOR\n"
   current_branch="$TRAVIS_BRANCH"
   current_pwd="`pwd`"
-  git clone -b "$current_branch" "`git remote get-url origin`" ../tmp-full
+  git clone --recursive -b "$current_branch" "`git remote get-url origin`" ../tmp-full
   cd ../tmp-full
 fi
 
