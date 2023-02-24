@@ -102,8 +102,9 @@ def BTDRun(nolocal=False):
 
     BTD_IN_DOCKER = False
     try:
-        cgroup = str(check_output(["cat", "/proc/self/cgroup"]))
-        BTD_IN_DOCKER = ("docker" in cgroup) or ("containerd" in cgroup) or ("actions_job" in cgroup)
+        # https://stackoverflow.com/questions/69002675/on-debian-11-bullseye-proc-self-cgroup-inside-a-docker-container-does-not-sho
+        mountinfo = str(check_output(["cat", "/proc/self/mountinfo"]))
+        BTD_IN_DOCKER = ("docker" in mountinfo) or ("containerd" in mountinfo) or ("actions_job" in mountinfo)
     except:
         pass
     print("SPHINX:", which("sphinx-build"))
