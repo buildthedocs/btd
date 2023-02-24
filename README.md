@@ -1,13 +1,13 @@
 <p align="center">
   <!--
   -->
-  <a title="Site" href="https://buildthedocs.github.io/btd"><img src="https://img.shields.io/website.svg?label=buildthedocs.github.io%2Fbtd&longCache=true&style=flat-square&url=http%3A%2F%2Fbuildthedocs.github.io%2Fbtd%2Findex.html"></a><!--
+  <a title="Site" href="https://buildthedocs.github.io/btd"><img src="https://img.shields.io/website.svg?label=buildthedocs.github.io%2Fbtd&longCache=true&style=flat-square&url=http%3A%2F%2Fbuildthedocs.github.io%2Fbtd%2Findex.html&logo=GitHub"></a><!--
   -->
   <a title="Join the chat at gitter.im/buildthedocs/community" href="https://gitter.im/buildthedocs/community"><img src="https://img.shields.io/badge/chat-on%20gitter-4db797.svg?longCache=true&style=flat-square&logo=gitter&logoColor=e8ecef"></a><!--
   -->
-  <a title="'images' workflow Status" href="https://github.com/buildthedocs/btd/actions?query=workflow%3Aimages"><img alt="'images' workflow Status" src="https://img.shields.io/github/workflow/status/buildthedocs/btd/images?longCache=true&style=flat-square&logo=github&logoColor=e8ecef&label=imgs"></a><!--
+  <a title="'images' workflow Status" href="https://github.com/buildthedocs/btd/actions?query=workflow%3Aimages"><img alt="'images' workflow Status" src="https://img.shields.io/github/workflow/status/buildthedocs/btd/images/master?longCache=true&style=flat-square&logo=Github%20Actions&logoColor=e8ecef&label=imgs"></a><!--
   -->
-  <a title="'test' workflow Status" href="https://github.com/buildthedocs/btd/actions?query=workflow%3Atest"><img alt="'images' workflow Status" src="https://img.shields.io/github/workflow/status/buildthedocs/btd/test?longCache=true&style=flat-square&logo=github&logoColor=e8ecef&label=test"></a><!--
+  <a title="'test' workflow Status" href="https://github.com/buildthedocs/btd/actions?query=workflow%3Atest"><img alt="'images' workflow Status" src="https://img.shields.io/github/workflow/status/buildthedocs/btd/test/master?longCache=true&style=flat-square&logo=Github%20Actions&logoColor=e8ecef&label=test"></a><!--
   -->
 </p>
 
