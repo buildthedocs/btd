@@ -5,7 +5,7 @@ inputs:
     description: 'YAML configuration file'
     default: '.btd.yml'
   token:
-    description: 'Token to make authenticated API calls'
+    description: 'Token to make authenticated API calls; can be passed in using {{ secrets.GITHUB_TOKEN }}'
 runs:
   using: 'docker'
   image: 'Dockerfile'
