@@ -1,13 +1,5 @@
-- [About](#about-buildthedocs-btd)
-- [Install](#install)
-- [Use](#use)
-- [Development](#development)
-- [Similar projects](#similar-projects)
-
----
-
 NOTE! This is not an actively supported project. It is a documented and slightly cleaned up version of
-scripts that were written to move some projects from RTD.org to Travis and GitHub Pages.
+scripts that were written to move some projects from RTD.org to Travis CI and GitHub Pages.
 
 # About buildthedocs (BTD)
 
