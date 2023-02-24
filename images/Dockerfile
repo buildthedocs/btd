@@ -44,6 +44,12 @@ FROM debian:stretch-slim AS do-latex
 RUN apt-get update -y && apt-get -y install texlive-full texlive-fonts-recommended texlive-latex-extra-doc
 WORKDIR /src
 
+#> TEXSTUDIO
+
+FROM do-latex AS do-texstudio
+RUN apt-get update -y && apt-get -y install texstudio
+WORKDIR /src
+
 #> PANDOC
 
 FROM do-latex AS do-pandoc
