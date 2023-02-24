@@ -3,6 +3,9 @@
 
 # -- Path setup --------------------------------------------------------------
 
+from json import loads
+from pathlib import Path
+
 # import os
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
@@ -28,25 +31,21 @@ exclude_patterns = ['deprecated', '_build', 'Thumbs.db', '.DS_Store']
 
 # -- Options for HTML output -------------------------------------------------
 
-try:
-    import divio_docs_theme
-except ModuleNotFoundError:
-    html_theme = 'alabaster'
-else:
-    html_theme = 'divio_docs_theme'
-    html_theme_path = [divio_docs_theme.get_html_theme_path()]
-    # html_theme_options = {
-    #     'show_cloud_banner': True,
-    #     'cloud_banner_markup': """
-    #         <div class="divio-cloud">
-    #             <span class="divio-cloud-caption">Cloud management by Divio</span>
-    #             <p>If you like our attitude to documentation, you'll love the way we do cloud management.</p>
-    #             <a class="btn-neutral divio-cloud-btn" target="_blank" href="https://goo.gl/nHv16j">Talk to us</a>
-    #         </div>
-    #     """,
-    # }
-
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+html_theme_options = {
+    'logo_only': True,
+    'home_breadcrumbs': False,
+    'vcs_pageview_mode': 'blob',
+}
+
+html_context = {}
+ctx = Path(__file__).resolve().parent / 'context.json'
+if ctx.is_file():
+    html_context.update(loads(ctx.open('r').read()))
+
+html_theme_path = ["."]
+html_theme = "_theme"
