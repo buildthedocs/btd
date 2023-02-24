@@ -54,6 +54,14 @@ if [   "$BTD_SOURCE_REPO" = "" ]; then
   fi
 fi
 
+if [ "$(echo $BTD_FORMATS | grep html)" != "" ]; then
+  BTD_FORMAT_HTML="true";
+fi
+
+if [ "$(echo $BTD_FORMATS | grep pdf)" != "" ]; then
+  BTD_FORMAT_PDF="true";
+fi
+
 #---
 
 parse_branch() {

@@ -24,7 +24,7 @@ addons:
 #      tags: true
 
 stages:
-#  - build images
+  - build images
 #  - test
   - build and update gh-pages
 
