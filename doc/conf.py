@@ -6,17 +6,19 @@ import shlex
 import re
 import subprocess
 
+from os.path import abspath, isfile
+
 # http://docs.readthedocs.io/en/latest/getting_started.html#in-markdown
 from recommonmark.parser import CommonMarkParser
 source_parsers = { '.md': CommonMarkParser, }
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
-# documentation root, use os.path.abspath to make it absolute, like shown here.
-sys.path.insert(0, os.path.abspath('.'))
-# sys.path.insert(0, os.path.abspath('../py'))
-sys.path.insert(0, os.path.abspath('_extensions'))
-# sys.path.insert(0, os.path.abspath('_themes/sphinx_btd_theme'))
+# documentation root, use [os.path.]abspath to make it absolute, like shown here.
+sys.path.insert(0, abspath('.'))
+# sys.path.insert(0, abspath('../py'))
+sys.path.insert(0, abspath('_extensions'))
+# sys.path.insert(0, abspath('_themes/sphinx_btd_theme'))
 
 # -- General configuration ------------------------------------------------
 
@@ -122,10 +124,6 @@ except Exception as ex:
 
 # -- Options for HTML output ----------------------------------------------
 
-#import json
-#decoded = json.loads(encoded)
-#dictionary1, dictionary2 = decoded
-
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #html_theme = 'alabaster'
@@ -136,16 +134,14 @@ html_context = {
         'https://media.readthedocs.org/css/sphinx_rtd_theme.css',
         'https://media.readthedocs.org/css/readthedocs-doc-embed.css',
         '_static/theme_overrides.css',
-    ],
-	'display_github': True,
-    'github_user': 'buildthedocs',
-    'github_repo': 'btd',
-    'github_version': 'master/doc/',
-	'VERSIONING': True,
-	'current_version': 'master',
-    'versions': [ ['master', '../master'], ['demo', '../demo'] ],
-    'downloads': [ ['PDF', '/master.pdf'], ['HTML', '/master.tgz'] ]
+    ]
 }
+
+# Add display_github and VERSIONING data
+if isfile('context.json'):
+   from json import loads
+   data = loads(open('context.json').read())
+   html_context.update(data)
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further. For a list of options available for each theme, see the

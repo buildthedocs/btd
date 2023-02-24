@@ -53,15 +53,6 @@ build_version() {
 
   echo "INSTALL_REQUIREMENTS: $INSTALL_REQUIREMENTS"
 
-  printf "$ANSI_DARKCYAN[BTD - build $1] Get theme(s) $ANSI_NOCOLOR\n"
-  if [ "$BTD_SPHINX_THEME" != "none" ]; then
-    mkdir -p theme-tmp
-    cd theme-tmp
-    curl -L "$BTD_SPHINX_THEME" | tar xvz --strip 1
-    zip -r "../$BTD_INPUT_DIR/sphinx_btd_theme.zip" ./*
-    cd .. && rm -rf theme-tmp
-  fi
-
 #  for f in $(echo $BTD_FORMATS | sed 's/,/ /g'`); do
 #    echo "$f"
 #  done
@@ -70,7 +61,7 @@ build_version() {
   travis_time_start
   printf "$ANSI_DARKCYAN[BTD - build $1] Run Sphinx $ANSI_NOCOLOR\n"
   docker run --rm -tv /$(pwd):/src -v btd-vol://_build "$BTD_IMG_SPHINX" sh -c "\
-    cd $BTD_INPUT_DIR && $INSTALL_REQUIREMENTS \
+    cd $BTD_INPUT_DIR && cat context.json && $INSTALL_REQUIREMENTS \
     sphinx-build -T -b html -D language=en . /_build/html && \
     sphinx-build -T -b json -d /_build/doctrees-json -D language=en . /_build/json && \
     sphinx-build -b latex -D language=en -d _build/doctrees . /_build/latex"
@@ -148,11 +139,57 @@ if [ "$TRAVIS" = "true" ]; then
   cd ../tmp-full
 fi
 
+versions=""
+for v in `echo "$BTD_VERSION" | sed 's/,/ /g'`; do
+  versions="$versions [\"$v\", \"../$v\"],"
+done
+printf "%s\n" \
+  "\"VERSIONING\": true" \
+  "\"current_version\": \"activeVersion\"" \
+  "\"versions\": [$versions ]" \
+>> context.tmp
+sed -i 's/], ]/] ]/g' context.tmp
+last_line="\"downloads\": [ [\"PDF\", \"../pdf/activeVersion.pdf\"], [\"HTML\", \"../tgz/activeVersion.tgz\"] ]"
+
+if [ "$BTD_DISPLAY_GH" != "" ]; then
+  if [ "$last_line" != "" ]; then echo "$last_line" >> context.tmp; fi
+  subdir=""; if [ "$BTD_INPUT_DIR" != "" ]; then subdir="/$BTD_INPUT_DIR/"; fi
+  printf "%s\n" \
+    "\"display_github\": true" \
+    "\"github_user\": \"$BTD_GH_USER\"" \
+    "\"github_repo\": \"$BTD_GH_REPO\"" \
+  >> context.tmp
+  last_line="\"github_version\": \"activeVersion$subdir\""
+fi
+
+echo "{" > context.json
+while read -r line; do
+  printf "  %s,\n" "$line" >> context.json
+done < context.tmp
+printf "  $last_line\n" >> context.json
+echo "}" >> context.json
+
+rm context.tmp
+mv context.json $BTD_OUTPUT_DIR/context.json
+
+printf "$ANSI_DARKCYAN[BTD - build $1] Get theme(s) $ANSI_NOCOLOR\n"
+mkdir $BTD_OUTPUT_DIR/themes
+if [ "$BTD_SPHINX_THEME" != "none" ]; then
+  mkdir -p theme-tmp
+  cd theme-tmp
+  curl -L "$BTD_SPHINX_THEME" | tar xvz --strip 1
+  zip -r "$BTD_OUTPUT_DIR/themes/sphinx_btd_theme.zip" ./*
+  cd .. && rm -rf theme-tmp
+fi
+
 for v in `echo "$BTD_VERSION" | sed 's/,/ /g'`; do
   echo "travis_fold:start:$v"
   travis_time_start
   printf "$ANSI_DARKCYAN[BTD - build] Start $v $ANSI_NOCOLOR\n"
   git checkout $v
+  cp -r "$BTD_OUTPUT_DIR/themes/"* "$BTD_INPUT_DIR"
+  cp "$BTD_OUTPUT_DIR/context.json" "$BTD_INPUT_DIR"
+  sed -i 's/activeVersion/'"$v"'/g' "$BTD_INPUT_DIR/context.json"
   build_version "$v"
   mv "$BTD_OUTPUT_DIR/$v/html" "$BTD_OUTPUT_DIR/html/$v/"
   mv "$BTD_OUTPUT_DIR/$v/"*.pdf "$BTD_OUTPUT_DIR/html/pdf/"
@@ -167,8 +204,9 @@ if [ "$TRAVIS" = "true" ]; then
   cd "$current_pwd"
 fi
 
-if [ "$CLEAN_BTD" != "" ]; then
+if [ "$CLEAN_BTD" != "./" ]; then
   cd ..
   rm -rf "$CLEAN_BTD"
 fi
+
 #<
