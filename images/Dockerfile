@@ -45,6 +45,7 @@ RUN apt-get update -y && apt-get -y install texlive-full texlive-fonts-recommend
 WORKDIR /src
 
 #> HUGO Python 3.6
+# TODO https://gist.github.com/steinwaywhw/a4cd19cda655b8249d908261a62687f8
 
 FROM python:3.6-alpine3.7 AS do-hugo
 RUN apk --no-cache -U upgrade && apk --no-cache add ca-certificates curl py3-docutils git \
