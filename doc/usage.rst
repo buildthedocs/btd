@@ -31,8 +31,6 @@ Set `html_theme = "sphinx_btd_theme"` in the `conf.py` file to use it.
       html_context.update(data)
    ```
 
-html_last_updated_fmt
-
 Preparation for deployment
 ==========================
 

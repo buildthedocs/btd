@@ -44,15 +44,40 @@ Do never edit `btd.sh` directly. Shall you want to modify any subcommand, edit t
 
 ## `BTD_DISPLAY_GH`
 
+If ennvar `BTD_DISPLAY_GH` is not empty, the following fields are added to `context.json`:
+
 ```
-'display_github': True,
-'github_user': 'ghdl',
-'github_repo': 'ghdl',
-'github_version': 'master/doc/',
+"display_github": True
+"github_user": "$BTD_GH_USER"
+"github_repo": "$BTD_GH_REPO"
+"github_version": "activeVersion$subdir"
 ```
 
-##
+where
 
-Commit, revision, last updated
+- `BTD_GH_USER` and `BTD_GH_REPO` are automatically extracted from `BTD_SOURCE_URL`, which is itself extracted from
+`BTD_SOURCE_REPO`.
+- `activeVersion` is replaced with the corresponding version name in each build.
+- `subdir` is 'BTD_INPUT_DIR', if the latter is not empty.
 
-https://github.com/rtfd/sphinx_rtd_theme/issues/395
+When `context.json` is appended to `html_context` in the `conf.py` file, the content of these fields is used to replace
+`View page source` with `Edit on GitHub`.
+
+## `BTD_LAST_INFO`
+
+Last updated info format is defined with ennvar `BTD_LAST_INFO`.
+
+If theme `sphinx_rtd_theme` is used, these are the options:
+
+- `BTD_LAST_INFO=build`: only available in Travis, 'Build <BUILD_ID>' is shown, where `BUILD_ID` points to the
+build log.
+- `BTD_LAST_INFO=commit`: 'Revision <COMMIT_SHA>' is shown, where the first eight characters of the SHA are shown.
+- `BTD_LAST_INFO=date`: is the default Sphinx format, defined by `html_last_updated_fmt` in `conf.py`.
+
+If theme `sphinx_btd_theme` is used, the options above can be combined. For example, the default is:
+`BTD_LAST_INFO="Last updated on LAST_DATE [LAST_COMMIT - LAST_BUILD]"`. BTD will replace each token with the corresponding
+(linked) value. If `BTD_DISPLAY_GH` is set, the SHA is linked to the commit in the GitHub repo.
+
+- http://www.sphinx-doc.org/en/stable/config.html#confval-html_last_updated_fmt
+- https://stackoverflow.com/questions/39007271/why-doesnt-readthedocs-show-last-updated-on
+- https://github.com/rtfd/sphinx_rtd_theme/issues/395
