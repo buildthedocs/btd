@@ -9,9 +9,9 @@ The expected syntax for :samp:`BTD_SPHINX_THEME` is a comma separated list of UR
 
 * ATM, the default theme used in ReadTheDocs.org (RTD), `rtfd/sphinx_rtd_theme <https://github.com/rtfd/sphinx_rtd_theme>`_, does not support the *versions menu* for builds outside of their own CI service. Therefore, if :samp:`sphinx_rtd_theme` is used, multiple versions will be built, but the box will not be shown.
    * Because :samp:`sphinx_rtd_theme` is not a hard dependency, it must be added to the :samp:`requirements.txt` file: :samp:`git+https://github.com/rtfd/sphinx_rtd_theme@master`.
-* `buildthedocs/sphinx_btd_theme <https://github.com/buildthedocs/sphinx_btd_theme>`_ is an alternative to `sphinx_rtd_theme`, which includes minor modifications in order to enable the *versions menu*. See `rtfd/sphinx_rtd_theme#543 <https://github.com/rtfd/sphinx_rtd_theme/issues/543>`_. To use it, set :samp:`html_theme = "sphinx_btd_theme"` in the :samp:`conf.py`.
+* `buildthedocs/sphinx.theme <https://github.com/buildthedocs/sphinx.theme>`_ is an alternative to `sphinx_rtd_theme`, which includes minor modifications in order to enable the *versions menu*. See `rtfd/sphinx_rtd_theme#543 <https://github.com/rtfd/sphinx_rtd_theme/issues/543>`_. To use it, set :samp:`html_theme = "btd.sphinx.theme"` in the :samp:`conf.py`.
 
-In order to switch from `sphinx_rtd_theme` to `sphinx_btd_theme`, some minor modifications to `conf.py` might be required:
+In order to switch from `sphinx_rtd_theme` to `btd.sphinx.theme`, some minor modifications to `conf.py` might be required:
 
 * Unlike :samp:`rtd_theme`, which is a python package, :samp:`btd_theme` is distributed as a tarball/zip file. BTD automatically downloads it and places it in the same directory as :samp:`conf-py`, so no modification to :samp:`requirements.txt` is required. Just set :samp:`html_theme_path = ["."]` to let Sphinx find it.
 * A JSON file (:samp:`context.json`) is used to pass context data from BTD to Sphinx. Add the following snippet to the :samp:`conf.py`, just after the definition of :samp:`html_context`:
@@ -64,7 +64,7 @@ If theme :samp:`sphinx_rtd_theme` is used, these are the options:
 * :samp:`BTD_LAST_INFO=commit`: :samp:'Revision <COMMIT_SHA>' is shown, where the first eight characters of the SHA are shown.
 * :samp:`BTD_LAST_INFO=date`: is the default Sphinx format, defined by :samp:`html_last_updated_fmt` in :samp:`conf.py`.
 
-If theme :samp:`sphinx_btd_theme` is used, the options above can be combined. For example, the default is:
+If theme :samp:`btd.sphinx.theme` is used, the options above can be combined. For example, the default is:
 :samp:`BTD_LAST_INFO="Last updated on LAST_DATE [LAST_COMMIT - LAST_BUILD]"`. BTD will replace each token with the corresponding
 (linked) value. If :samp:`BTD_DISPLAY_GH` is set, the SHA is linked to the commit in the GitHub repo.
 

@@ -216,8 +216,8 @@ mkdir $BTD_OUTPUT_DIR/themes
 if [ "$BTD_SPHINX_THEME" != "none" ]; then
   mkdir -p theme-tmp
   cd theme-tmp
-  curl -L "$BTD_SPHINX_THEME" | tar xvz --strip 2 sphinx_btd_theme-master/dist
-  zip -r "$BTD_OUTPUT_DIR/themes/sphinx_btd_theme.zip" ./*
+  curl -L "$BTD_SPHINX_THEME" | tar xvz --strip 2 sphinx.theme-master/dist
+  zip -r "$BTD_OUTPUT_DIR/themes/btd.sphinx.theme.zip" ./*
   cd .. && rm -rf theme-tmp
 fi
 gend
