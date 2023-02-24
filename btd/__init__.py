@@ -107,11 +107,13 @@ def BTDRun(nolocal=False):
 
     BTD_IN_DOCKER = False
     try:
-      BTD_IN_DOCKER = 'docker' in str(check_output(["cat", "/proc/self/cgroup"]))
+      cgroup = str(check_output(["cat", "/proc/self/cgroup"]))
+      BTD_IN_DOCKER = ('docker' in cgroup) or ('containerd' in cgroup) or ('actions_job' in cgroup)
     except:
       pass
     print('SPHINX:', which('sphinx-build'))
     print('DOCKER:', which('docker'))
+    print('IN_DOCKER:', BTD_IN_DOCKER)
     print('LATEX:', which('pdflatex'))
 
     BTD_CFG = BTDConfigFile(environ.get('INPUT_CONFIG'))
@@ -163,6 +165,7 @@ def BTDRun(nolocal=False):
                 fptr.write('pip install -r %s\n' % str(Path('/src') / BTD_REQUIREMENTS))
                 fptr.write('make %s\n' % fmt)
                 fptr.flush()
+
             check_output(['chmod', '+x', str(BTD_INPUT_DIR / 'btd_make.sh')])
 
 #            with (BTD_INPUT_DIR / 'btd_make.sh').open('w') as fptr:
@@ -250,7 +253,6 @@ def addCtx(idir):
       'GITHUB_REPOSITORY' in environ and
       'GITHUB_REF' in environ
     ):
-        print(environ)
         data["conf_py_path"] = "%s/" % Path(idir).name
 
         repo = environ['GITHUB_REPOSITORY'].split('/')
