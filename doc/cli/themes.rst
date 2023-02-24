@@ -65,3 +65,9 @@ options in the ``conf.py`` file should look like the following snippet:
 Find further details about theme options at `buildthedocs.github.io/sphinx.theme/configuring <https://buildthedocs.github.io/sphinx.theme/configuring.html>`_.
 
 .. HINT:: For testing the theme locally by calling Sphinx directly (without BTD), retrieve the theme and extract it to `doc/_theme`.
+
+Other themes to keep an eye on
+==============================
+
+* `pradyunsg/furo <https://github.com/pradyunsg/furo>`__
+* `sphinxthemes.com <https://sphinxthemes.com/>`__
