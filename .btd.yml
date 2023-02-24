@@ -32,5 +32,5 @@ images:
   latex: btdi/latex
 
 # Install theme from a repo or a tarball
-theme: https://codeload.github.com/buildthedocs/sphinx.theme/tar.gz/v0
+theme: https://codeload.github.com/buildthedocs/sphinx.theme/tar.gz/v1
 
