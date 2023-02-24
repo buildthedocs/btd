@@ -56,5 +56,5 @@ html_theme = "_theme"
 extlinks = {
     'gh': ('https://github.com/%s', 'gh:%s'),
     'btdsharp': ('https://github.com/buildthedocs/btd/issues/%s', '#%s'),
-    'btdrepo':   ('https://github.com/buildthedocs/btd/blob/master/%s', None),
+    'btdrepo':   ('https://github.com/buildthedocs/btd/blob/main/%s', None),
 }
