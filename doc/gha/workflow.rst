@@ -32,7 +32,7 @@ The following YAML snippet is a minimal GitHub Actions workflow. Enable BTD in a
             path: source/_build/html
 
 Since the (optional) ``token`` is provided, BTD will automatically upload the documentation to branch ``gh-pages`` (or the
-target specified in :btdsrc:`.btd.yml <.btd.yml>`). Then, it will be available at ``https://USERNAME.github.io/REPOSITORY``.
+target specified in :btdrepo:`.btd.yml <.btd.yml>`). Then, it will be available at ``https://USERNAME.github.io/REPOSITORY``.
 
 Using ``actions/upload-artifact`` is optional too. As the name implies, it uploads the results of the workflow as a zipfile.
 This might be useful for testing purposes, or in PRs. That is, for building the documentation in CI and checking the results,

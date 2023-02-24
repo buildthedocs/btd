@@ -178,5 +178,5 @@ extlinks = {
    'btdsharp': ('https://github.com/buildthedocs/btd/issues/%s', '#'),
    'btdissue': ('https://github.com/buildthedocs/btd/issues/%s', 'issue #'),
    'btdpull':  ('https://github.com/buildthedocs/btd/pull/%s', 'pull request #'),
-   'btdsrc':   ('https://github.com/buildthedocs/btd/blob/master/btd/%s', None)
+   'btdrepo':   ('https://github.com/buildthedocs/btd/blob/master/%s', None)
 }

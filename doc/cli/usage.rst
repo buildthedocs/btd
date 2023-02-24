@@ -4,7 +4,7 @@ Usage
 #####
 
 Most of the features are not exposed through CLI yet. A YAML configuration file is used instead. Copy
-:btdsrc:`.btd.yml <.btd.yml>` to your repository and follow the instructions inside for customising it to your use case.
+:btdrepo:`.btd.yml <.btd.yml>` to your repository and follow the instructions inside for customising it to your use case.
 When ``cli.py run`` is executed, the config file is expected to exist in ``$pwd/.btd.yml``.
 
 - If available, BTD uses a ``Makefile`` located in the root of the input sources. A ``Makefile`` is typically created

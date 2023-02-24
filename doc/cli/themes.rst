@@ -45,7 +45,7 @@ on any host. Apart from ensuring that it works on GitHub Pages, some aesthetical
 
 As explained in `buildthedocs/sphinx.theme: README <https://github.com/buildthedocs/sphinx.theme#build-the-docs-sphinx-theme>`_,
 the BTD theme is not distributed as a pip package. Users need to clone/download the theme and extract it to a given path.
-Fortunately, BTD does it automatically as long as field ``theme`` is set in :btdsrc:`.btd.yml <.btd.yml>`. This feature might
+Fortunately, BTD does it automatically as long as field ``theme`` is set in :btdrepo:`.btd.yml <.btd.yml>`. This feature might
 be used for providing any custom theme.
 
 BTD downloads and extracts the theme in a subdir ``_theme`` in the root of the input sources. Hence, theme related
