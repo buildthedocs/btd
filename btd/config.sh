@@ -47,10 +47,13 @@ if [     "$BTD_IMG_LATEX" = "" ]; then     BTD_IMG_LATEX="btdi/latex";     fi
 if [  "$BTD_SPHINX_THEME" = "" ]; then  BTD_SPHINX_THEME="https://github.com/buildthedocs/sphinx_btd_theme/archive/btd.tar.gz"; fi
 if [    "$BTD_DEPLOY_KEY" = "" ]; then    BTD_DEPLOY_KEY="deploy_key.enc"; fi
 
-if [   "$BTD_SOURCE_REPO" = "" ]; then
-  BTD_SOURCE_REPO="master";
+CLEAN_BTD=""
+
+if [   "$BTD_SOURCE_REPO" = "" ] || [ "`echo "$BTD_SOURCE_REPO" | grep ":"`" = "" ]; then
+  if [   "$BTD_SOURCE_REPO" = "" ]; then BTD_SOURCE_REPO="master"; fi
   if [ -d ".git" ] && [ "`command -v git`" != "" ]; then
-    BTD_SOURCE_REPO="`git remote get-url origin`:master"
+    BTD_SOURCE_REPO="$(git config remote.origin.url | sed -r s#git@\(.*\):#http://\\1/#g):$BTD_SOURCE_REPO"
+    CLEAN_BTD="./"
   fi
 fi
 
@@ -81,16 +84,13 @@ parse_branch() {
       PARSED_DIR="`echo "$PARSED_BRANCH" | cut -d'/' -f2-`"
       PARSED_BRANCH="`echo "$PARSED_BRANCH" | cut -d'/' -f1`"
     fi
-
-    if [ "`echo "$PARSED_BRANCH" | grep "/"`" != "" ]; then
-      PARSED_DIR="`echo "$PARSED_BRANCH" | cut -d'/' -f2-`"
-      PARSED_BRANCH="`echo "$PARSED_BRANCH" | cut -d'/' -f1`"
-    fi
   fi
 }
 
 #--- Source repository and input dir
 
+PARSED_URL=""
+PARSED_DIR=""
 PARSED_BRANCH="$BTD_SOURCE_REPO"
 parse_branch
 BTD_SOURCE_URL="$PARSED_URL"
@@ -99,7 +99,6 @@ if [ "$PARSED_DIR" != "" ]; then
   BTD_INPUT_DIR="$PARSED_DIR"
 fi
 
-CLEAN_BTD=""
 if [ "$BTD_SOURCE_URL" = "" ]; then
   CLEAN_BTD="./"
 fi

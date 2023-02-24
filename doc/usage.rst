@@ -31,7 +31,7 @@ Syntax of `BTD_SOURCE_REPO` and `BTD_TARGET_REPO`
 
    [[<protocol>://<domain>/]<user>/<repo>:]<branch>[/subdir[/subsubdir[...]]]
 
-If nothing is prepended to `<branch>`, the location of `.btd.yml` is considered to be a previously cloned git repository.
+If set to empty, it defaults to :samp:`master`. If nothing is prepended to `<branch>`, the location of `.btd.yml` is considered to be a previously cloned git repository.
 
 `BTD_DISPLAY_GH`
 ----------------
