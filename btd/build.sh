@@ -175,7 +175,6 @@ split_custom() {
 }
 
 if [ "$TRAVIS" = "true" ]; then
-  BTD_COMMIT="$TRAVIS_COMMIT"
   case $BTD_LAST_INFO in
     "build")
       printf "%s\n" \
@@ -195,9 +194,6 @@ if [ "$TRAVIS" = "true" ]; then
     ;;
   esac
 else
-  if [ -d ".git" ] && [ "`command -v git`" != "" ]; then
-    BTD_COMMIT="$(git rev-parse --verify HEAD)"
-  fi
   case $BTD_LAST_INFO in
     "build")
       printf "%s\n" \
@@ -217,9 +213,9 @@ else
 fi
 
 if [ "$BTD_DISPLAY_GH" != "" ]; then
-  last_commit='<a href=\\"'"`echo "$BTD_SOURCE_URL" | sed 's/\.git$//g'`/commit/$BTD_COMMIT"'\\">'"`echo "$BTD_COMMIT" | cut -c1-8`</a>"
+  last_commit='<a href=\\"'"`echo "$BTD_SOURCE_URL" | sed 's/\.git$//g'`/commit/BTD_COMMIT_PLACEHOLDER"'\\">BTD_COMMIT_SHORT_PLACEHOLDER</a>'
 else
-  last_commit="`echo "$BTD_COMMIT" | cut -c1-8`"
+  last_commit="BTD_COMMIT_SHORT_PLACEHOLDER"
 fi
 sed -i 's@LAST_COMMIT@'"$last_commit"'@g' context.tmp
 
@@ -282,6 +278,9 @@ for v in `echo "$BTD_VERSION" | sed 's/,/ /g'`; do
   cp -r "$BTD_OUTPUT_DIR/themes/"* "$BTD_INPUT_DIR"
   cp "$BTD_OUTPUT_DIR/context.json" "$BTD_INPUT_DIR"
   sed -i 's/activeVersion/'"$v"'/g' "$BTD_INPUT_DIR/context.json"
+  BTD_COMMIT="$(git rev-parse --verify HEAD)"
+  sed -i 's/BTD_COMMIT_PLACEHOLDER/'"$BTD_COMMIT"'/g' "$BTD_INPUT_DIR/context.json"
+  sed -i 's/BTD_COMMIT_SHORT_PLACEHOLDER/'`echo "$BTD_COMMIT" | cut -c1-8`'/g' "$BTD_INPUT_DIR/context.json"
   build_version "$v"
   mv "$BTD_OUTPUT_DIR/$v/${BTD_NAME}_${v}.pdf" "$BTD_OUTPUT_DIR/html/pdf/"
   mv "$BTD_OUTPUT_DIR/$v" "$BTD_OUTPUT_DIR/${BTD_NAME}_$v"
