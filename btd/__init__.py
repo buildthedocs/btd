@@ -47,6 +47,7 @@ class BTDConfigFile:
             "requirements": "requirements.txt",
             "formats": ["html"],
             "images": {"base": "btdi/sphinx:featured", "latex": "btdi/latex"},
+            "target": "gh-pages",
         }
 
     def getPath(self, root: Path, key: str) -> Path:
@@ -196,10 +197,11 @@ def BTDRun(nolocal=False):
         and (environ.get("INPUT_SKIP-DEPLOY", "false").lower() != "true")
     ):
         startBlock("Publish...")
+        # TODO: Handle the complete target syntax for domain/repo/branch and path where products are to be deployed.
         publish(
             BTD_OUTPUT_DIR / "html",
             "https://x-access-token:%s@github.com/%s" % (environ.get("INPUT_TOKEN"), environ.get("GITHUB_REPOSITORY")),
-            "gh-pages",
+            BTD_CFG.getKey("target"),
             "update %s" % environ.get("GITHUB_SHA"),
         )
         endBlock()
