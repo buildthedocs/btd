@@ -24,9 +24,9 @@ site generators and (optionally) uploading the output to git repositories. For e
 workspaces, a Docker Action is also provided. The Action wraps the CLI tool in a container and sets most parameters based
 on the context.
 
+
 .. toctree::
    :hidden:
-   :maxdepth: 4
    :caption: Command-Line Interface
 
    cli/usage
@@ -35,12 +35,18 @@ on the context.
 
 .. toctree::
    :hidden:
-   :maxdepth: 4
    :caption: GitHub Actions
 
    gha/action
    gha/workflow
    gha/examples
+
+
+.. toctree::
+   :hidden:
+   :caption: Appendix
+
+   references
 
 
 ..  * :ref:`genindex`
