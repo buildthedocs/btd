@@ -6,6 +6,9 @@ inputs:
     default: '.btd.yml'
   token:
     description: 'Token to make authenticated API calls; can be passed in using {{ secrets.GITHUB_TOKEN }}'
+  skip-deploy:
+    default: false
+    description: 'Whether to push the docs or to just build them'
 runs:
   using: 'docker'
   image: 'Dockerfile'

@@ -197,11 +197,11 @@ def BTDRun(nolocal=False):
 
         endBlock()
 
-    if (
-        'INPUT_TOKEN' in environ and
+    if ( 'INPUT_TOKEN' in environ and
         'GITHUB_REPOSITORY' in environ and
         'GITHUB_SHA' in environ and
-        'html' in BTD_FORMATS
+        'html' in BTD_FORMATS and
+        (environ.get('INPUT_SKIP-DEPLOY', 'false').lower() != 'true')
     ):
         startBlock('Publish...')
         publish(
