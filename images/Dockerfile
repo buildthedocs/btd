@@ -36,7 +36,7 @@ RUN pip install -r /py_base_requirements.txt
 
 FROM do-sphinx__py3-base AS do-sphinx__py3-featured
 COPY py_featured_requirements.txt /
-RUN apk add -U --no-cache gcc linux-headers musl-dev
+RUN apk add -U --no-cache gcc linux-headers musl-dev libffi-dev zlib-dev jpeg-dev
 RUN pip install -r /py_featured_requirements.txt
 
 #> LATEX
