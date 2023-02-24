@@ -284,21 +284,22 @@ btd_build() {
   cd -
   echo "travis_fold:end:abs_output"
   
-  echo "travis_fold:start:list"
-  travis_time_start
-  printf "$ANSI_DARKCYAN[BTD - build] Create version list $ANSI_NOCOLOR\n"
-  printf "<head></head><body>\n" > "index.html"
-  for v in `echo "$BTD_VERSION" | sed 's/,/ /g'`; do
-    printf "<a href=\"$v\">$v</a>\n" >> "index.html"
-  done
-  printf "</body>\n" >> "index.html"
-  mv "index.html" "$BTD_OUTPUT_DIR/html/index.html"
-  travis_time_finish
-  echo "travis_fold:end:list"
+  #echo "travis_fold:start:list"
+  #travis_time_start
+  printf "$ANSI_DARKCYAN[BTD - build] Create index.html $ANSI_NOCOLOR\n"
+  printf "<html><head><meta http-equiv=\"refresh\" content=\"0; url=`echo "$BTD_VERSION" | cut -d ',' -f1`\"></head><body></body>\n" > "$BTD_OUTPUT_DIR/html/index.html"
+  #for v in `echo "$BTD_VERSION" | sed 's/,/ /g'`; do
+  #  printf "<a href=\"$v\">$v</a>\n" >> "index.html"
+  #done
+  #printf "</body>\n" >> "index.html"
+  #mv "index.html" "$BTD_OUTPUT_DIR/html/index.html"
+  #travis_time_finish
+  #echo "travis_fold:end:list"
   
   current_branch="`git rev-parse --abbrev-ref HEAD`"
   
   if [ "$TRAVIS" = "true" ]; then
+    printf "$ANSI_DARKCYAN[BTD - build] Get clean clone $ANSI_NOCOLOR\n"
     current_branch="$TRAVIS_BRANCH"
     current_pwd="`pwd`"
     git clone -b "$current_branch" "`git remote get-url origin`" ../tmp-full
