@@ -34,12 +34,12 @@ from shutil import which, rmtree
 
 
 def startBlock(msg):
-    print("##[group]%s" % msg)
+    print(f"::group::{msg}")
     stdout.flush()
 
 
 def endBlock():
-    print("##[endgroup]")
+    print("::endgroup::")
     stdout.flush()
 
 
@@ -51,13 +51,13 @@ class BTDConfigFile:
             cfgfile = Path(cfgfile)
 
         if not cfgfile.exists():
-            raise (Exception("Configuration file %s not found!" % str(cfgfile)))
+            raise Exception(f"Configuration file {cfgfile!s} not found!")
 
         with cfgfile.open("r") as stream:
             self._cfg = load(stream, Loader=Loader)
 
         for key, val in self._cfg.items():
-            print("%s: %s" % (key, val))
+            print(f"{key}: {val}")
             stdout.flush()
 
         self._defaults = {
@@ -106,7 +106,7 @@ def publish(bdir: Path, remote: str, branch: str, message: str):
         ["git", "config", "--local", "user.name", "BuildTheDocs"],
         ["git", "remote", "add", "origin", remote],
         ["git", "commit", "-a", "-m", message],
-        ["git", "push", "-u", "origin", "+HEAD:%s" % branch],
+        ["git", "push", "-u", "origin", f"+HEAD:{branch}"],
     ]:
         check_call(cmd, cwd=str(bdir))
 
@@ -162,11 +162,11 @@ def BTDRun(nolocal=False):
         if fmt == "pdf" and "latex" not in BTD_FORMATS:
             fmt = "latex"
 
-        startBlock("Build %s..." % fmt)
+        startBlock(f"Build {fmt}...")
 
         BTD_SPHINX = which("sphinx-build")
         if (not nolocal) and BTD_SPHINX:
-            print("BUILD local: %s %s" % (BTD_INPUT_DIR, BTD_OUTPUT_DIR))
+            print(f"BUILD local: {BTD_INPUT_DIR} {BTD_OUTPUT_DIR}")
             if BTD_REQUIREMENTS.exists():
                 check_call([executable, "-m", "pip", "install", "-r", str(BTD_REQUIREMENTS)])
             build(fmt, BTD_INPUT_DIR, BTD_OUTPUT_DIR)
@@ -175,19 +175,19 @@ def BTDRun(nolocal=False):
             with (BTD_INPUT_DIR / "btd_make.sh").open("w") as fptr:
                 fptr.write("#!/usr/bin/env sh\n")
                 if BTD_REQUIREMENTS.exists():
-                    fptr.write("pip install -r %s\n" % str(Path("/src") / BTD_REQUIREMENTS))
-                fptr.write("make %s\n" % fmt)
+                    fptr.write(f"pip install -r {str(Path('/src') / BTD_REQUIREMENTS)}\n")
+                fptr.write(f"make {fmt}\n")
                 fptr.flush()
 
             check_output(["chmod", "+x", str(BTD_INPUT_DIR / "btd_make.sh")])
 
             #            with (BTD_INPUT_DIR / 'btd_make.sh').open('w') as fptr:
-            #                fptr.write('''
+            #                fptr.write(f'''
             ##!/usr/bin/env sh
             #
-            # pip install -r %s
-            # make %s
-            #''' % (str(BTD_REQUIREMENTS), fmt))
+            # pip install -r {BTD_REQUIREMENTS!s}
+            # make {fmt}
+            #'''
             #            check_output(['chmod', '+x', str(BTD_INPUT_DIR / 'btd_make.sh')])
             # TODO: Integrate build, to support docs without makefile
             cmd = [
@@ -195,13 +195,13 @@ def BTDRun(nolocal=False):
                 "run",
                 "--rm",
                 "-v",
-                "%s:/src" % str(workRoot),
+                f"{workRoot!s}:/src",
                 "-w",
-                "/src/%s" % str(BTD_INPUT_DIR),
+                f"/src/{BTD_INPUT_DIR!s}",
                 BTD_IMGS["base"],
                 "./btd_make.sh",
             ]
-            print("BUILD docker: %s" % " ".join(cmd))
+            print(f"BUILD docker: {' '.join(cmd)}")
             stdout.flush()
             check_call(cmd)
         else:
@@ -220,9 +220,9 @@ def BTDRun(nolocal=False):
         # TODO: Handle the complete target syntax for domain/repo/branch and path where products are to be deployed.
         publish(
             BTD_OUTPUT_DIR / "html",
-            "https://x-access-token:%s@github.com/%s" % (environ.get("INPUT_TOKEN"), environ.get("GITHUB_REPOSITORY")),
+            f"https://x-access-token:{environ.get('INPUT_TOKEN')}@github.com/{environ.get('GITHUB_REPOSITORY')}",
             BTD_CFG.getKey("target"),
-            "update %s" % environ.get("GITHUB_SHA"),
+            f"update {environ.get('GITHUB_SHA')}",
         )
         endBlock()
 
@@ -236,7 +236,7 @@ def BTDRun(nolocal=False):
                 "-e",
                 "LATEXMKOPTS='-interaction=nonstopmode'",
                 "-v",
-                "%s:/src" % str(workRoot / BTD_OUTPUT_DIR / "latex"),
+                f"{str(workRoot / BTD_OUTPUT_DIR / 'latex')}:/src",
                 BTD_IMGS["latex"],
                 "make",
             ]
@@ -271,14 +271,14 @@ def getTheme(path: Path, url: str):
 def addCtx(idir):
     data = {}
     if "GITHUB_REPOSITORY" in environ and "GITHUB_REF" in environ:
-        data["conf_py_path"] = "%s/" % Path(idir).name
+        data["conf_py_path"] = f"{Path(idir).name!s}/"
 
         repo = environ["GITHUB_REPOSITORY"].split("/")
         data["github_user"] = repo[0]
         data["github_repo"] = repo[1]
 
         ref = environ["GITHUB_REF"].split("/")
-        data["github_version"] = "%s/" % ref[-1]
+        data["github_version"] = f"{ref[-1]}/"
 
         data["display_github"] = True
 
