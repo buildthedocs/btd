@@ -31,6 +31,14 @@ env:
 
 jobs:
 
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - run: |
+        pip3 install -r ./test/requirements.txt
+        PYTHONPATH=$(pwd) pytest -vsrA --color=yes test/location.py
+
   action:
     runs-on: ubuntu-latest
     steps:

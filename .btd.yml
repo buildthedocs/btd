@@ -29,10 +29,10 @@ output: _build
 # Absolute or relative to 'input'
 #requirements:
 
-# Domain/repo/branch|tag where sources are located:
+# Domain/repo/branch|tag: [[<protocol>://<domain>/]<user>/<repo>:]<branch>[/subdir[/subsubdir[...]]]
+# Location of the sources:
 #source: master
-
-# Domain/repo/branch and path where products are to be deployed:
+# Where products are to be deployed:
 target: gh-pages
 
 # List of output formats
