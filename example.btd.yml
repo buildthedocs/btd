@@ -1,0 +1,19 @@
+# Path to input sources, i.e. the documentation sources (can be absolute or relative to the location of this file)
+input: doc
+
+# Path to save intermediate artifacts and products (can be absolute or relative to the location of this file)
+output: _build
+
+# Domain/repo/branch|tag where sources are located:
+source: master
+
+# Domain/repo/branch and path where products are to be deployed:
+target: gh-pages
+
+# List of versions
+versions:
+  - id: master
+#    title: ""
+#    description: ""
+#    warning: ""
+  - id: v0.0.0
