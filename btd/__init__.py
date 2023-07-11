@@ -168,14 +168,14 @@ def BTDRun(nolocal=False):
         if (not nolocal) and BTD_SPHINX:
             print("BUILD local: %s %s" % (BTD_INPUT_DIR, BTD_OUTPUT_DIR))
             if BTD_REQUIREMENTS.exists():
-                check_call([executable, "-m", "pip", "install", "-r", str(BTD_REQUIREMENTS)])
+                check_call([executable, "-m", "pip", "install", "--break-system-packages", "-r", str(BTD_REQUIREMENTS)])
             build(fmt, BTD_INPUT_DIR, BTD_OUTPUT_DIR)
         elif BTD_DOCKER:
 
             with (BTD_INPUT_DIR / "btd_make.sh").open("w") as fptr:
                 fptr.write("#!/usr/bin/env sh\n")
                 if BTD_REQUIREMENTS.exists():
-                    fptr.write("pip install -r %s\n" % str(Path("/src") / BTD_REQUIREMENTS))
+                    fptr.write(f'pip install --break-system-packages -r {Path("/src") / BTD_REQUIREMENTS}\n')
                 fptr.write("make %s\n" % fmt)
                 fptr.flush()
 
@@ -185,7 +185,7 @@ def BTDRun(nolocal=False):
             #                fptr.write('''
             ##!/usr/bin/env sh
             #
-            # pip install -r %s
+            # pip install --break-system-packages -r %s
             # make %s
             #''' % (str(BTD_REQUIREMENTS), fmt))
             #            check_output(['chmod', '+x', str(BTD_INPUT_DIR / 'btd_make.sh')])
