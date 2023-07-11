@@ -168,7 +168,10 @@ def BTDRun(nolocal=False):
         if (not nolocal) and BTD_SPHINX:
             print("BUILD local: %s %s" % (BTD_INPUT_DIR, BTD_OUTPUT_DIR))
             if BTD_REQUIREMENTS.exists():
-                check_call([executable, "-m", "pip", "install", "--break-system-packages", "-r", str(BTD_REQUIREMENTS)])
+                cmd = [executable, "-m", "pip", "install", "-r", str(BTD_REQUIREMENTS)]
+                if '--break-system-packages' in str(check_output([executable, "-m", "pip", "install", "-h"])):
+                    cmd += "--break-system-packages"
+                check_call(cmd)
             build(fmt, BTD_INPUT_DIR, BTD_OUTPUT_DIR)
         elif BTD_DOCKER:
 
@@ -179,7 +182,7 @@ def BTDRun(nolocal=False):
                 fptr.write("make %s\n" % fmt)
                 fptr.flush()
 
-            check_output(["chmod", "+x", str(BTD_INPUT_DIR / "btd_make.sh")])
+            check_call(["chmod", "+x", str(BTD_INPUT_DIR / "btd_make.sh")])
 
             #            with (BTD_INPUT_DIR / 'btd_make.sh').open('w') as fptr:
             #                fptr.write('''
