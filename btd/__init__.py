@@ -165,7 +165,9 @@ def BTDRun(nolocal=False):
         startBlock("Build %s..." % fmt)
 
         BTD_SPHINX = which("sphinx-build")
+
         if (not nolocal) and BTD_SPHINX:
+
             print("BUILD local: %s %s" % (BTD_INPUT_DIR, BTD_OUTPUT_DIR))
             if BTD_REQUIREMENTS.exists():
                 cmd = [executable, "-m", "pip", "install", "-r", str(BTD_REQUIREMENTS)]
@@ -173,12 +175,13 @@ def BTDRun(nolocal=False):
                     cmd += "--break-system-packages"
                 check_call(cmd)
             build(fmt, BTD_INPUT_DIR, BTD_OUTPUT_DIR)
+
         elif BTD_DOCKER:
 
             with (BTD_INPUT_DIR / "btd_make.sh").open("w") as fptr:
                 fptr.write("#!/usr/bin/env sh\n")
                 if BTD_REQUIREMENTS.exists():
-                    fptr.write(f'pip install --break-system-packages -r {Path("/src") / BTD_REQUIREMENTS}\n')
+                    fptr.write(f'pip install -r {Path("/src") / BTD_REQUIREMENTS}\n')
                 fptr.write("make %s\n" % fmt)
                 fptr.flush()
 
@@ -207,7 +210,9 @@ def BTDRun(nolocal=False):
             print("BUILD docker: %s" % " ".join(cmd))
             stdout.flush()
             check_call(cmd)
+
         else:
+
             raise (Exception("Neither 'sphinx-build' nor 'docker' available!"))
 
         endBlock()
